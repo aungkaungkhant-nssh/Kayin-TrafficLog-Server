@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      GOOGLE_EMAIL: ${{ secrets.GOOGLE_EMAIL }}
+      GOOGLE_PASS: ${{ secrets.GOOGLE_PASS }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Debugging DATABASE_URL, showing only the first 10 characters
+      - name: Debug DATABASE_URL (first 10 chars)
+        run: echo "DATABASE_URL starts with ${DATABASE_URL:0:15}..."
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 21
+
+      - name: Install dependencies
+        run: npm install
+
+      # Debugging DATABASE_URL again after dependencies are installed (still masked)
+      - name: Debug DATABASE_URL again (first 15 chars)
+        run: echo "DATABASE_URL starts with ${DATABASE_URL:0:15}..."
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Build project
+        run: npm run build
