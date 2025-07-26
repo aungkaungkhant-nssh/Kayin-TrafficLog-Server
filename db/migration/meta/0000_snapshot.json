@@ -1,9 +1,45 @@
 {
-  "id": "2eb0127c-f9c2-4bc4-a55f-b3ed875dad2e",
+  "id": "3fba1ec1-adbf-4c25-9c19-65269383a1e8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.categories": {
+      "name": "categories",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "categories_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.users": {
       "name": "users",
       "schema": "",
@@ -31,15 +67,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "email": {
-          "name": "email",
+        "password": {
+          "name": "password",
           "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "academicYear": {
-          "name": "academicYear",
-          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true
         }
@@ -47,28 +77,24 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "users_email_unique": {
-          "name": "users_email_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
-        },
-        "users_academicYear_unique": {
-          "name": "users_academicYear_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "academicYear"
-          ]
-        }
-      },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.types": {
+      "name": "types",
+      "schema": "public",
+      "values": [
+        "Tutorial",
+        "Assignment",
+        "Quiz",
+        "Presentation"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

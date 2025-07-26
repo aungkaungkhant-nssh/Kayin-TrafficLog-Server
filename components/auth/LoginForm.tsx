@@ -26,7 +26,7 @@ const LoginForm = () => {
     });
 
     const onSubmit = async (data: LoginSchemaType) => {
-        console.log('Form submitted:', data);
+        
     };
 
     return (

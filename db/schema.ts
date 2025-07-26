@@ -8,13 +8,19 @@ export const categoriesTable = pgTable("categories", {
     name: varchar({ length: 255 }).notNull(),
 })
 
+export const userTable = pgTable("users", {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    name: varchar({ length: 255 }).notNull(),
+    password: varchar({ length: 255 }).notNull(),
+})
+
 
 // export const remindersTable = pgTable("reminders", {
 //     id: integer().primaryKey().generatedAlwaysAsIdentity(),
 //     name: varchar({ length: 255 }).notNull(),
 //     email: varchar({ length: 255 }).notNull().unique(),
 //     academicYearId: integer()
-//         .notNull()
+//         .notNull()clear
 //         .references(() => academicYearsTable.id)
 // });
 
