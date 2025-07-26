@@ -1,4 +1,5 @@
 
+import LoginForm from "@/components/auth/LoginForm";
 import { columns } from "@/components/data/columns";
 import { DataTable } from "@/components/data/data-table";
 // import { getSchedules } from "@/server/action/schedule";
@@ -8,14 +9,13 @@ export interface Props {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function Page({ searchParams }: Props) {
-  const params = await searchParams;
-  const currentPage = +(params?.page || 1)
+export default async function Page() {
+
   // const tutorialSchedules = await getSchedules(ScheduleEnum.Tutorial, currentPage);
 
   return (
     <div className="w-[100%]">
-      <h1 className="text-xl font-bold text-primary">Tutorial Schedule Lists</h1>
+      <LoginForm />
       {/* <DataTable
         data={[]}
         columns={columns}

@@ -35,7 +35,10 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SidebarProvider>
+        {
+          children
+        }
+        {/* <SidebarProvider>
           <AppSidebar />
           <SidebarTrigger />
           <SidebarInset>
@@ -49,7 +52,7 @@ export default async function RootLayout({
             </div>
           </SidebarInset>
 
-        </SidebarProvider>
+        </SidebarProvider> */}
         {/* <div className="my-[80px] mx-[8px] md:mx-[30px] lg:mx-[180px]">
           {children}
         </div> */}
