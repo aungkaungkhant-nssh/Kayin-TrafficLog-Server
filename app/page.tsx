@@ -26,3 +26,9 @@ export default async function Page() {
     </div>
   );
 }
+
+
+// import { handlers } from "@/server/auth"
+// import NextAuth from "next-auth";
+// export const { auth } = NextAuth(handlers);
+// export const { GET, POST } = handlers
