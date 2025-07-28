@@ -17,17 +17,17 @@ import { LayoutDashboard, Notebook, FileCheck } from "lucide-react";
 const items = [
     {
         title: "ဇယားများ",
-        url: "/",
+        url: "/admin/dashboard",
         icon: LayoutDashboard,
     },
     {
         title: "နေ့စဉ်မှတ်တမ်းများ",
-        url: "/daily",
+        url: "/admin/daily",
         icon: Notebook,
     },
     {
         title: "တရားစွဲပြီးသောမှတ်တမ်းများ",
-        url: "/case",
+        url: "/admin/case",
         icon: FileCheck,
     }
 ]

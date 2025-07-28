@@ -26,19 +26,24 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Input } from "../ui/input";
-import AddSchedule from "../schedule/AddSchedule";
-import { ScheduleEnum } from "@/utils/enum/Schedule";
 import { LIMIT } from "@/utils/constant/limit";
+import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[],
-    scheduleTitle: ScheduleEnum,
+    scheduleTitle: string,
     meta: {
         totalCount: number,
         hasNextPage: boolean
     }
-    currentPage: number
+    currentPage: number,
+    showPagination: boolean,
+    showSearch?: boolean,
+    showButton?: boolean,
+    buttonText?: string,
+    buttonRedirectPath?: string; // pass from serve
 }
 
 export function DataTable<TData, TValue>({
@@ -46,7 +51,12 @@ export function DataTable<TData, TValue>({
     data,
     scheduleTitle,
     meta,
-    currentPage
+    currentPage,
+    showPagination = true,
+    showSearch = true,
+    showButton = true,
+    buttonText,
+    buttonRedirectPath
 }: DataTableProps<TData, TValue>) {
     const table = useReactTable({
         data,
@@ -54,21 +64,41 @@ export function DataTable<TData, TValue>({
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
     });
+    const router = useRouter();
     const totalPages = Math.ceil(meta.totalCount / LIMIT);
+    const handleButtonClick = () => {
+        if (buttonRedirectPath) {
+            router.push(buttonRedirectPath);
+        } else {
+            console.log("Button clicked with no redirect");
+        }
+    };
     return (
         <div className="rounded-md  w-full">
             <div className="flex items-center justify-between py-4">
-                <Input
-                    placeholder="Search"
-                    value={(table.getColumn("teacher_name")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("teacher_name")?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-44 md:max-w-sm"
-                />
                 <div className="flex items-center gap-1">
-                    <AddSchedule scheduleTitle={scheduleTitle} />
+                    <h1 className="font-bold">{scheduleTitle}</h1>
                 </div>
+                {
+                    showSearch && (
+                        <Input
+                            placeholder="Search"
+                            value={(table.getColumn("teacher_name")?.getFilterValue() as string) ?? ""}
+                            onChange={(event) =>
+                                table.getColumn("teacher_name")?.setFilterValue(event.target.value)
+                            }
+                            className="max-w-44 md:max-w-sm"
+                        />
+                    )
+                }
+
+                {showButton && (
+                    <Button
+                        onClick={handleButtonClick}
+                    >
+                        <span>{buttonText}</span>
+                    </Button>
+                )}
 
             </div>
             <Table className="w-full table-auto border">
@@ -117,35 +147,40 @@ export function DataTable<TData, TValue>({
                 </TableBody>
             </Table>
             <div className="my-3">
-                <Pagination>
-                    <PaginationContent>
-                        {
-                            currentPage !== 1 && (
-                                <PaginationItem>
-                                    <PaginationPrevious href={`?page=${currentPage - 1}`} />
-                                </PaginationItem>
-                            )
-                        }
-                        {[...Array(totalPages)].map((_, index) => (
-                            <PaginationItem key={index}>
-                                <PaginationLink
-                                    href={`?page=${index + 1}`}
-                                    className={currentPage === index + 1 ? "bg-primary text-white" : ""}
-                                >
-                                    {index + 1}
-                                </PaginationLink>
-                            </PaginationItem>
-                        ))}
-                        {
-                            meta.hasNextPage && (
-                                <PaginationItem>
-                                    <PaginationNext href={`?page=${currentPage + 1}`} />
-                                </PaginationItem>
-                            )
-                        }
+                {
+                    showPagination && (
+                        <Pagination>
+                            <PaginationContent>
+                                {
+                                    currentPage !== 1 && (
+                                        <PaginationItem>
+                                            <PaginationPrevious href={`?page=${currentPage - 1}`} />
+                                        </PaginationItem>
+                                    )
+                                }
+                                {[...Array(totalPages)].map((_, index) => (
+                                    <PaginationItem key={index}>
+                                        <PaginationLink
+                                            href={`?page=${index + 1}`}
+                                            className={currentPage === index + 1 ? "bg-primary text-white" : ""}
+                                        >
+                                            {index + 1}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
+                                {
+                                    meta.hasNextPage && (
+                                        <PaginationItem>
+                                            <PaginationNext href={`?page=${currentPage + 1}`} />
+                                        </PaginationItem>
+                                    )
+                                }
 
-                    </PaginationContent>
-                </Pagination>
+                            </PaginationContent>
+                        </Pagination>
+                    )
+                }
+
 
             </div>
         </div >

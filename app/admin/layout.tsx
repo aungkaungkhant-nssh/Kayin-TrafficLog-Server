@@ -39,16 +39,16 @@ export default async function RootLayout({
                     <AppSidebar />
                     <SidebarTrigger />
                     <SidebarInset>
-                        <div className="my-[80px] mx-[8px] md:mx-[30px] lg:mx-[180px]">
+                        <div className="my-[40px] mx-[20px]">
                             <Navbar />
                             {children}
                         </div>
                     </SidebarInset>
 
                 </SidebarProvider>
-                <div className="my-[80px] mx-[8px] md:mx-[30px] lg:mx-[180px]">
+                {/* <div className="my-[80px] mx-[8px] md:mx-[30px] lg:mx-[180px]">
                     {children}
-                </div>
+                </div> */}
             </body>
         </html>
     );
