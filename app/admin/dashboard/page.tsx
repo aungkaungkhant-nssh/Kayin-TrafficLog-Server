@@ -4,6 +4,7 @@ import { ChartBarLabel } from '@/components/ui/BarChart'
 import { ChartPieLabelList } from '@/components/ui/chart-pie-label';
 import { columns, Schedule } from "@/components/data/columns";
 import { DataTable } from '@/components/data/data-table';
+import { caseColumnKeys } from '@/utils/constant/columnkeys';
 
 const page = async () => {
   const dummyScheduleData: Schedule[] = [
@@ -81,13 +82,14 @@ const page = async () => {
         <DataTable
           data={dummyScheduleData}
           columns={columns}
-          scheduleTitle={"ပြစ်မှုအများဆုံး ကျူလွန်သောသူများ"}
+          scheduleTitle={"ပြစ်မှုများအများဆုံး ကျူးလွန်သူမှတ်တမ်းများ"}
           meta={{ totalCount: dummyScheduleData.length, hasNextPage: false }}
           currentPage={1}
           showPagination={false}
           showSearch={false}
           buttonText="အားလုံးကြည့်မည်"
           buttonRedirectPath="/trafficlog/offender"
+          toggleableColumnKeys={caseColumnKeys}
         />
       </div>
     </div>

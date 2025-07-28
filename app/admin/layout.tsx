@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-// import "./globals.css";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/sidebar/AppSidebar"
 import Navbar from "@/components/navbar/Navbar";
-// import { getAcademicYears } from "@/server/action/academic-years";
-// import { getSubjects } from "@/server/action/subjects";
-// import { getTeachers } from "@/server/action/teachers";
-
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -26,12 +21,10 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
     children,
+
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    // const academicYears = await getAcademicYears();
-    // const subjects = await getSubjects();
-    // const teachers = await getTeachers();
     return (
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
@@ -46,6 +39,7 @@ export default async function RootLayout({
                     </SidebarInset>
 
                 </SidebarProvider>
+
                 {/* <div className="my-[80px] mx-[8px] md:mx-[30px] lg:mx-[180px]">
                     {children}
                 </div> */}

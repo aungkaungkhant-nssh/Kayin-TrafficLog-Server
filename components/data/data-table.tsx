@@ -118,21 +118,21 @@ export const columns: ColumnDef<Schedule>[] = [
 ]
 
 // The columns you want to appear in the toggle dropdown and default selected
-const toggleableColumnKeys = [
-    "စဉ်",
-    "အရေးယူရက်စွဲ",
-    "ယာဉ်အမှတ်",
-    "အမျိုးအမည်",
-    "နေရာ",
-    "ယာဉ်မောင်းအမည်",
-    "မှတ်ပုံတင်အမှတ်",
-    "ပုဒ်မ",
-    "ပုဒ်မအကြောင်းအရာ",
-    "အရေးယူအရာရှိ",
-    "ဒဏ်ဆောင်ရက်",
-    "ရာကြီးအမှတ်",
-    "ဒဏ်ကြေး",
-]
+// const toggleableColumnKeys = [
+//     "စဉ်",
+//     "အရေးယူရက်စွဲ",
+//     "ယာဉ်အမှတ်",
+//     "အမျိုးအမည်",
+//     "နေရာ",
+//     "ယာဉ်မောင်းအမည်",
+//     "မှတ်ပုံတင်အမှတ်",
+//     "ပုဒ်မ",
+//     "ပုဒ်မအကြောင်းအရာ",
+//     "အရေးယူအရာရှိ",
+//     "ဒဏ်ဆောင်ရက်",
+//     "ရာကြီးအမှတ်",
+//     "ဒဏ်ကြေး",
+// ]
 
 function ColumnToggleDropdown({
     columns,
@@ -231,7 +231,8 @@ interface DataTableProps<TData, TValue> {
     showSearch?: boolean
     showButton?: boolean
     buttonText?: string
-    buttonRedirectPath?: string
+    buttonRedirectPath?: string,
+    toggleableColumnKeys: string[]
 }
 
 export function DataTable<TData, TValue>({
@@ -245,6 +246,7 @@ export function DataTable<TData, TValue>({
     showButton = true,
     buttonText,
     buttonRedirectPath,
+    toggleableColumnKeys
 }: DataTableProps<TData, TValue>) {
     // Default visibility: only toggleable columns are visible, others false
     const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>(() => {
@@ -282,25 +284,27 @@ export function DataTable<TData, TValue>({
     return (
         <div className="rounded-md w-full">
             <div className="flex flex-wrap items-center justify-between gap-2 py-4">
-                <h1 className="font-bold text-xl">{scheduleTitle}</h1>
+                <h1 className="font-bold text-xl text-primary">{scheduleTitle}</h1>
 
                 <div className="flex items-center gap-3 flex-wrap">
-                    {showSearch && (
-                        <Input
-                            placeholder="Search"
-                            value={(table.getColumn("teacher_name")?.getFilterValue() as string) ?? ""}
-                            onChange={(event) =>
-                                table.getColumn("teacher_name")?.setFilterValue(event.target.value)
-                            }
-                            className="max-w-44 md:max-w-sm"
-                        />
-                    )}
-
                     <ColumnToggleDropdown
                         columns={columns}
                         columnVisibility={columnVisibility}
                         setColumnVisibility={setColumnVisibility}
                     />
+                    {showSearch && (
+                        <div>
+                            <Input
+                                placeholder="Search"
+                                // value={(table.getColumn("teacher_name")?.getFilterValue() as string) ?? ""}
+                                // onChange={(event) =>
+                                //     table.getColumn("teacher_name")?.setFilterValue(event.target.value)
+                                // }
+                                className="max-w-44 md:max-w-sm"
+                            />
+                        </div>
+
+                    )}
 
                     {showButton && (
                         <Button onClick={handleButtonClick}>
