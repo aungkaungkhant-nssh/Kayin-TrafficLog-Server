@@ -7,9 +7,10 @@ import { insertOffenseCases } from "@/server/action/offensecases";
 type OffenseCaseInsert = InferInsertModel<typeof offenseCasesTable>;
 
 export async function POST(req: NextRequest) {
+
     try {
-        const data: OffenseCaseInsert[] = await req.json();
-        console.log(data)
+        const res = await req.json();
+        const data: OffenseCaseInsert[] = res.data;
         if (!Array.isArray(data) || data.length === 0) {
             return new Response(JSON.stringify({ error: "Invalid or empty data array" }), {
                 status: 400,
