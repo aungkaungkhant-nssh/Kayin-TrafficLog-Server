@@ -39,10 +39,6 @@ export default async function RootLayout({
                     </SidebarInset>
 
                 </SidebarProvider>
-
-                {/* <div className="my-[80px] mx-[8px] md:mx-[30px] lg:mx-[180px]">
-                    {children}
-                </div> */}
             </body>
         </html>
     );

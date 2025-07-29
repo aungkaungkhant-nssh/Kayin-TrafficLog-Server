@@ -1,7 +1,8 @@
 
 "use server"
 import { db } from '@/db';
-import { userTable } from '@/db/schema';
+import { categoriesTable, userTable } from '@/db/schema';
+import vehicleCategoriesData from '@/utils/constant/vehiclecategories';
 import bcrypt from 'bcryptjs';
 
 export async function register() {
@@ -14,5 +15,15 @@ export async function register() {
     });
 
     console.log("success")
+
+}
+
+
+export async function seedCategories() {
+    await Promise.all(vehicleCategoriesData.map(async (vehicleCategory) => {
+        await db.insert(categoriesTable).values({
+            name: vehicleCategory
+        })
+    }))
 
 }

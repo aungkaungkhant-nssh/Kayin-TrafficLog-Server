@@ -1,5 +1,4 @@
-import { relations } from "drizzle-orm";
-import { date, integer, pgEnum, pgTable, varchar } from "drizzle-orm/pg-core";
+import { timestamp, date, integer, pgEnum, pgTable, varchar } from "drizzle-orm/pg-core";
 export const typesEnum = pgEnum("types", ["Tutorial", "Assignment", "Quiz", "Presentation"]);
 
 
@@ -13,6 +12,59 @@ export const userTable = pgTable("users", {
     name: varchar({ length: 255 }).notNull(),
     password: varchar({ length: 255 }).notNull(),
 })
+
+export const offenseCasesTable = pgTable("offense_cases", {
+    seizureId: varchar({ length: 255 }).notNull().primaryKey(),
+
+    caseNumber: integer(),
+    actionDate: date(),
+
+    articleId: integer().notNull(),
+    articleNumber: varchar({ length: 50 }).notNull(),
+
+    offenderId: varchar({ length: 255 }).notNull(),
+    offenderName: varchar({ length: 255 }).notNull(),
+    offenderFatherName: varchar({ length: 255 }).notNull(),
+    nationalIdNumber: varchar({ length: 100 }).notNull(),
+    offenderAddress: varchar({ length: 255 }).notNull(),
+    offenderCreatedAt: timestamp().notNull(),
+    offenderUpdatedAt: timestamp().notNull(),
+
+    offenseId: integer().notNull(),
+    offenseName: varchar({ length: 255 }).notNull(),
+
+    officerId: integer().notNull(),
+    officerName: varchar({ length: 255 }).notNull(),
+
+    fineAmount: varchar({ length: 50 }).notNull(),
+    finePaid: varchar({ length: 50 }),
+
+    vehicleId: varchar({ length: 255 }).notNull(),
+    vehicleNumber: varchar({ length: 100 }).notNull(),
+    vehicleTypes: varchar({ length: 100 }).notNull(),
+    vehicleLicenseNumber: varchar({ length: 100 }),
+    vehicleCategoriesId: integer().notNull(),
+    vehicleCreatedAt: timestamp().notNull(),
+    vehicleUpdatedAt: timestamp().notNull(),
+
+    offenderVehicleId: varchar({ length: 255 }).notNull(),
+    offenderVehicleCreatedAt: timestamp().notNull(),
+    offenderVehicleUpdatedAt: timestamp().notNull(),
+
+    seizedDate: date().notNull(),
+    seizedItemId: integer().notNull(),
+    seizedItemName: varchar({ length: 255 }).notNull(),
+    seizureLocation: varchar({ length: 255 }).notNull(),
+    seizureCreatedAt: timestamp().notNull(),
+    seizureUpdatedAt: timestamp().notNull(),
+
+    disciplinaryCommittedId: integer().notNull(),
+    dcCreatedAt: timestamp().notNull(),
+    dcUpdatedAt: timestamp().notNull(),
+
+    wheelTax: varchar({ length: 100 }),
+});
+
 
 
 // export const remindersTable = pgTable("reminders", {

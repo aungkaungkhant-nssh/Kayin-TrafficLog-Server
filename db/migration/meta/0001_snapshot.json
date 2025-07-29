@@ -1,0 +1,349 @@
+{
+  "id": "fecc4939-1581-4d0c-b656-91c2c9a4ce8b",
+  "prevId": "3fba1ec1-adbf-4c25-9c19-65269383a1e8",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.categories": {
+      "name": "categories",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "categories_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.offense_cases": {
+      "name": "offense_cases",
+      "schema": "",
+      "columns": {
+        "seizureId": {
+          "name": "seizureId",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "caseNumber": {
+          "name": "caseNumber",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "actionDate": {
+          "name": "actionDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "articleId": {
+          "name": "articleId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "articleNumber": {
+          "name": "articleNumber",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offenderId": {
+          "name": "offenderId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offenderName": {
+          "name": "offenderName",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offenderFatherName": {
+          "name": "offenderFatherName",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nationalIdNumber": {
+          "name": "nationalIdNumber",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offenderAddress": {
+          "name": "offenderAddress",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offenderCreatedAt": {
+          "name": "offenderCreatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offenderUpdatedAt": {
+          "name": "offenderUpdatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offenseId": {
+          "name": "offenseId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offenseName": {
+          "name": "offenseName",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "officerId": {
+          "name": "officerId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "officerName": {
+          "name": "officerName",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fineAmount": {
+          "name": "fineAmount",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "finePaid": {
+          "name": "finePaid",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vehicleId": {
+          "name": "vehicleId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vehicleNumber": {
+          "name": "vehicleNumber",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vehicleTypes": {
+          "name": "vehicleTypes",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vehicleLicenseNumber": {
+          "name": "vehicleLicenseNumber",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vehicleCategoriesId": {
+          "name": "vehicleCategoriesId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vehicleCreatedAt": {
+          "name": "vehicleCreatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "vehicleUpdatedAt": {
+          "name": "vehicleUpdatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offenderVehicleId": {
+          "name": "offenderVehicleId",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offenderVehicleCreatedAt": {
+          "name": "offenderVehicleCreatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offenderVehicleUpdatedAt": {
+          "name": "offenderVehicleUpdatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "seizedDate": {
+          "name": "seizedDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "seizedItemId": {
+          "name": "seizedItemId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "seizedItemName": {
+          "name": "seizedItemName",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "seizureLocation": {
+          "name": "seizureLocation",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "seizureCreatedAt": {
+          "name": "seizureCreatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "seizureUpdatedAt": {
+          "name": "seizureUpdatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "disciplinaryCommittedId": {
+          "name": "disciplinaryCommittedId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dcCreatedAt": {
+          "name": "dcCreatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dcUpdatedAt": {
+          "name": "dcUpdatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "wheelTax": {
+          "name": "wheelTax",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "users_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.types": {
+      "name": "types",
+      "schema": "public",
+      "values": [
+        "Tutorial",
+        "Assignment",
+        "Quiz",
+        "Presentation"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
