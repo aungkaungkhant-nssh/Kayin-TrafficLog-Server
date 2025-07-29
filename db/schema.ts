@@ -1,4 +1,4 @@
-import { timestamp, date, integer, pgEnum, pgTable, varchar } from "drizzle-orm/pg-core";
+import { bigint, integer, pgEnum, pgTable, varchar } from "drizzle-orm/pg-core";
 export const typesEnum = pgEnum("types", ["Tutorial", "Assignment", "Quiz", "Presentation"]);
 
 
@@ -14,55 +14,55 @@ export const userTable = pgTable("users", {
 })
 
 export const offenseCasesTable = pgTable("offense_cases", {
-    seizureId: varchar({ length: 255 }).notNull().primaryKey(),
+    seizure_id: bigint({ mode: "number" }).notNull().primaryKey(),
 
-    caseNumber: integer(),
-    actionDate: date(),
+    case_number: integer(),
+    action_date: varchar({ length: 255 }),
 
-    articleId: integer().notNull(),
-    articleNumber: varchar({ length: 50 }).notNull(),
+    article_id: bigint({ mode: "number" }).notNull(),
+    article_number: varchar({ length: 50 }).notNull(),
 
-    offenderId: varchar({ length: 255 }).notNull(),
-    offenderName: varchar({ length: 255 }).notNull(),
-    offenderFatherName: varchar({ length: 255 }).notNull(),
-    nationalIdNumber: varchar({ length: 100 }).notNull(),
-    offenderAddress: varchar({ length: 255 }).notNull(),
-    offenderCreatedAt: timestamp().notNull(),
-    offenderUpdatedAt: timestamp().notNull(),
+    offender_id: bigint({ mode: "number" }).notNull(),
+    offender_name: varchar({ length: 255 }).notNull(),
+    offender_father_name: varchar({ length: 255 }).notNull(),
+    national_id_number: varchar({ length: 100 }).notNull(),
+    offender_address: varchar({ length: 255 }).notNull(),
+    offender_created_at: varchar({ length: 255 }),
+    offender_updated_at: varchar({ length: 255 }),
 
-    offenseId: integer().notNull(),
-    offenseName: varchar({ length: 255 }).notNull(),
+    offense_id: bigint({ mode: "number" }).notNull(),
+    offense_name: varchar({ length: 255 }).notNull(),
 
-    officerId: integer().notNull(),
-    officerName: varchar({ length: 255 }).notNull(),
+    officer_id: bigint({ mode: "number" }).notNull(),
+    officer_name: varchar({ length: 255 }).notNull(),
 
-    fineAmount: varchar({ length: 50 }).notNull(),
-    finePaid: varchar({ length: 50 }),
+    fine_amount: varchar({ length: 50 }).notNull(),
+    fine_paid: integer(),
 
-    vehicleId: varchar({ length: 255 }).notNull(),
-    vehicleNumber: varchar({ length: 100 }).notNull(),
-    vehicleTypes: varchar({ length: 100 }).notNull(),
-    vehicleLicenseNumber: varchar({ length: 100 }),
-    vehicleCategoriesId: integer().notNull(),
-    vehicleCreatedAt: timestamp().notNull(),
-    vehicleUpdatedAt: timestamp().notNull(),
+    vehicle_id: bigint({ mode: "number" }).notNull(),
+    vehicle_number: varchar({ length: 100 }).notNull(),
+    vehicle_types: varchar({ length: 100 }).notNull(),
+    vehicle_license_number: varchar({ length: 100 }),
+    vehicle_categories_id: integer().notNull(),
+    vehicle_created_at: varchar({ length: 255 }),
+    vehicle_updated_at: varchar({ length: 255 }),
 
-    offenderVehicleId: varchar({ length: 255 }).notNull(),
-    offenderVehicleCreatedAt: timestamp().notNull(),
-    offenderVehicleUpdatedAt: timestamp().notNull(),
+    offender_vehicle_id: bigint({ mode: "number" }).notNull(),
+    offender_vehicle_created_at: varchar({ length: 255 }),
+    offender_vehicle_updated_at: varchar({ length: 255 }),
 
-    seizedDate: date().notNull(),
-    seizedItemId: integer().notNull(),
-    seizedItemName: varchar({ length: 255 }).notNull(),
-    seizureLocation: varchar({ length: 255 }).notNull(),
-    seizureCreatedAt: timestamp().notNull(),
-    seizureUpdatedAt: timestamp().notNull(),
+    seized_date: varchar({ length: 100 }).notNull(),
+    seized_item_id: integer().notNull(),
+    seized_item_name: varchar({ length: 255 }).notNull(),
+    seizure_location: varchar({ length: 255 }).notNull(),
+    seizure_created_at: varchar({ length: 255 }),
+    seizure_updated_at: varchar({ length: 255 }),
 
-    disciplinaryCommittedId: integer().notNull(),
-    dcCreatedAt: timestamp().notNull(),
-    dcUpdatedAt: timestamp().notNull(),
+    disciplinary_committed_id: integer().notNull(),
+    dc_created_at: varchar({ length: 255 }),
+    dc_updated_at: varchar({ length: 255 }),
 
-    wheelTax: varchar({ length: 100 }),
+    wheel_tax: varchar({ length: 100 }),
 });
 
 
