@@ -1,70 +1,145 @@
 
 "use server"
 import { db } from "@/db";
-import { offenseCasesTable } from "@/db/schema";
-import { between, or, and, isNotNull } from "drizzle-orm";
+import {
+    vehiclesTable,
+    offendersTable,
+    offenderVehiclesTable,
+    vehicleSeizureRecordsTable,
+} from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 // Type for inserting rows
 // type OffenseCaseInsert = InferInsertModel<typeof offenseCasesTable>;
 
-// export async function insertOffenseCases(data: any[]) {
-//     if (!data || data.length === 0) return;
+export async function insertOffenseCases(data: any[]) {
+    if (!data || data.length === 0) return;
+    await Promise.all(
+        data.map(async (item) => {
+            const {
+                vehicle_id,
+                offender_vehicle_id,
+                vehicle_categories_id,
+                vehicle_number,
+                vehicle_types,
+                offender_id,
+                offender_name,
+                offender_father_name,
+                national_id_number,
+                driver_license_number,
+                offender_address,
+                seizure_id,
+                disciplinary_committed_id,
+                officer_id,
+                seized_date,
+                seizure_location,
+                action_date,
+                case_number,
+                seized_item_id,
+            } = item;
 
-//     for (const item of data) {
-//         await db
-//             .insert(offenseCasesTable)
-//             .values({
-//                 ...item,
-//                 case_number: item?.case_number == "" ? null : item.case_number,
-//                 action_date: item.action_date === "" ? null : item.action_date,
-//                 fine_paid: item.fine_paid === "" ? null : item.fine_paid,
-//                 vehicle_license_number: item.vehicle_license_number === "" ? null : item.vehicle_license_number,
-//                 wheel_tax: item.wheel_tax === "" ? null : item.wheel_tax,
-//             })
-//             .onConflictDoUpdate({
-//                 target: offenseCasesTable.seizure_id,
-//                 set: {
-//                     case_number: item.case_number === "" ? null : item.case_number,
-//                     action_date: item.action_date === "" ? null : item.action_date,
-//                     article_id: item.article_id,
-//                     article_number: item.article_number,
-//                     offender_id: item.offender_id,
-//                     offender_name: item.offender_name,
-//                     offender_father_name: item.offender_father_name,
-//                     national_id_number: item.national_id_number,
-//                     offender_address: item.offender_address,
-//                     offender_created_at: item.offender_created_at,
-//                     offender_updated_at: item.offender_updated_at,
-//                     offense_id: item.offense_id,
-//                     offense_name: item.offense_name,
-//                     officer_id: item.officer_id,
-//                     officer_name: item.officer_name,
-//                     fine_amount: item.fine_amount,
-//                     fine_paid: item.fine_paid === "" ? null : item.fine_paid,
-//                     vehicle_id: item.vehicle_id,
-//                     vehicle_number: item.vehicle_number,
-//                     vehicle_types: item.vehicle_types,
-//                     vehicle_license_number: item.vehicle_license_number === "" ? null : item.vehicle_license_number,
-//                     vehicle_categories_id: item.vehicle_categories_id,
-//                     vehicle_created_at: item.vehicle_created_at,
-//                     vehicle_updated_at: item.vehicle_updated_at,
-//                     offender_vehicle_id: item.offender_vehicle_id,
-//                     offender_vehicle_created_at: item.offender_vehicle_created_at,
-//                     offender_vehicle_updated_at: item.offender_vehicle_updated_at,
-//                     seized_date: item.seized_date,
-//                     seized_item_id: item.seized_item_id,
-//                     seized_item_name: item.seized_item_name,
-//                     seizure_location: item.seizure_location,
-//                     seizure_created_at: item.seizure_created_at,
-//                     seizure_updated_at: item.seizure_updated_at,
-//                     disciplinary_committed_id: item.disciplinary_committed_id,
-//                     dc_created_at: item.dc_created_at,
-//                     dc_updated_at: item.dc_updated_at,
-//                     wheel_tax: item.wheel_tax === "" ? null : item.wheel_tax,
-//                 },
-//             });
-//     }
-// }
+            // 1. Check if offender_vehicle exists
+            const offenderVehicleRows = await db
+                .select()
+                .from(offenderVehiclesTable)
+                .where(eq(offenderVehiclesTable.id, offender_vehicle_id))
+                .limit(1);
+            let offenderVehicle = offenderVehicleRows[0];
+
+            if (!offenderVehicle) {
+                // 2. Check if vehicle exists
+                const vehicleRows = await db
+                    .select()
+                    .from(vehiclesTable)
+                    .where(eq(vehiclesTable.id, vehicle_id))
+                    .limit(1);
+                let vehicle = vehicleRows[0];
+
+                if (!vehicle) {
+                    await db.insert(vehiclesTable).values({
+                        id: vehicle_id,
+                        vehicle_number,
+                        vehicle_categories_id,
+                        vehicle_types,
+                        wheel_tax: null,
+                        vehicle_license_number: null,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString(),
+                    });
+                    vehicle = { id: vehicle_id } as any;
+                }
+
+                // 3. Check if offender exists
+                const offenderRows = await db
+                    .select()
+                    .from(offendersTable)
+                    .where(eq(offendersTable.id, offender_id))
+                    .limit(1);
+                let offender = offenderRows[0] as any;
+
+                if (!offender) {
+                    await db.insert(offendersTable).values({
+                        id: offender_id,
+                        name: offender_name,
+                        father_name: offender_father_name,
+                        national_id_number,
+                        driver_license_number,
+                        address: offender_address,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString(),
+                    });
+                    offender = { id: offender_id };
+                }
+
+                // 4. Insert offender_vehicle
+                await db.insert(offenderVehiclesTable).values({
+                    id: offender_vehicle_id,
+                    offender_id,
+                    vehicle_id,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                });
+
+                offenderVehicle = { id: offender_vehicle_id } as any;
+            }
+
+            // 5. Check if vehicle seizure record exists
+            const seizureRows = await db
+                .select()
+                .from(vehicleSeizureRecordsTable)
+                .where(eq(vehicleSeizureRecordsTable.id, seizure_id))
+                .limit(1);
+            const seizureRecord = seizureRows[0];
+
+            if (seizureRecord) {
+                // Update existing seizure record
+                await db
+                    .update(vehicleSeizureRecordsTable)
+                    .set({
+                        case_number,
+                        action_date,
+                        updated_at: new Date().toISOString(),
+                    })
+                    .where(eq(vehicleSeizureRecordsTable.id, seizure_id));
+            } else {
+                // Insert new seizure record
+                await db.insert(vehicleSeizureRecordsTable).values({
+                    id: seizure_id,
+                    offender_vehicle_id,
+                    disciplinary_committed_id,
+                    officer_id,
+                    seized_date,
+                    seizure_location,
+                    seized_item_id,
+                    action_date: action_date || "",
+                    case_number: case_number ? parseInt(case_number) : null,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                });
+            }
+        })
+    );
+}
 
 
 

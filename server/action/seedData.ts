@@ -20,9 +20,9 @@ export async function addUsers() {
         const hashedPassword = await bcrypt.hash(user.password, 10);
         await db.insert(usersTable).values({
             name: user.name,
-            userName: user.user_name,
+            user_name: user.user_name,
             password: hashedPassword,
-            roleId: user.roleId
+            role_id: user.roleId
         });
     }))
 
@@ -73,9 +73,9 @@ export async function seedDisciplinaryData() {
 
             // 3. Join in disciplinary_committed
             await db.insert(disciplinaryCommittedTable).values({
-                disciplinaryArticlesId: articleId,
-                committedOffensesId: offenseId,
-                fineAmount: parseFloat(commit.fineAmount.replace(/[^0-9]/g, '')), // convert Burmese numerals to digits if needed
+                disciplinary_articles_id: articleId,
+                committed_offenses_id: offenseId,
+                fine_amount: commit.fineAmount,
             });
         }
     }

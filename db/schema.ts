@@ -1,4 +1,4 @@
-import { integer, pgEnum, pgTable, varchar, serial, text, timestamp, real } from "drizzle-orm/pg-core";
+import { integer, pgEnum, pgTable, varchar, serial, text, timestamp, bigint } from "drizzle-orm/pg-core";
 export const typesEnum = pgEnum("types", ["Tutorial", "Assignment", "Quiz", "Presentation"]);
 
 
@@ -10,9 +10,9 @@ export const rolesTable = pgTable('roles', {
 export const usersTable = pgTable('users', {
     id: serial('id').primaryKey(),
     name: varchar('name', { length: 255 }).notNull(),
-    userName: varchar("userName", { length: 255 }).notNull(),
+    user_name: varchar("user_name", { length: 255 }).notNull(),
     password: varchar('password', { length: 255 }).notNull(),
-    roleId: integer('role_id')
+    role_id: integer('role_id')
         .notNull()
         .references(() => rolesTable.id, { onDelete: 'restrict' }),
 });
@@ -20,110 +20,106 @@ export const usersTable = pgTable('users', {
 export const vehicleCategoriesTable = pgTable("vehicle_categories", {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     name: varchar({ length: 255 }).notNull(),
-})
-
+});
 
 export const disciplinaryArticlesTable = pgTable('disciplinary_articles', {
     id: serial('id').primaryKey(),
     number: text('number').notNull().unique(),
-    createdAt: timestamp('created_at', { mode: 'string' }).defaultNow(),
-    updatedAt: timestamp('updated_at', { mode: 'string' }).defaultNow(),
+    created_at: timestamp('created_at', { mode: 'string' }).defaultNow(),
+    updated_at: timestamp('updated_at', { mode: 'string' }).defaultNow(),
 });
-
 
 export const committedOffensesTable = pgTable('committed_offenses', {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
-    createdAt: timestamp('created_at', { mode: 'string' }).defaultNow(),
-    updatedAt: timestamp('updated_at', { mode: 'string' }).defaultNow(),
+    created_at: timestamp('created_at', { mode: 'string' }).defaultNow(),
+    updated_at: timestamp('updated_at', { mode: 'string' }).defaultNow(),
 });
 
 export const disciplinaryCommittedTable = pgTable('disciplinary_committed', {
     id: serial('id').primaryKey(),
 
-    disciplinaryArticlesId: integer('disciplinary_articles_id')
+    disciplinary_articles_id: integer('disciplinary_articles_id')
         .notNull()
         .references(() => disciplinaryArticlesTable.id, { onDelete: 'cascade' }),
 
-    committedOffensesId: integer('committed_offenses_id')
+    committed_offenses_id: integer('committed_offenses_id')
         .notNull()
         .references(() => committedOffensesTable.id, { onDelete: 'cascade' }),
 
-    fineAmount: real('fine_amount').notNull(),
-
-    createdAt: timestamp('created_at', { mode: 'string' }).defaultNow(),
-    updatedAt: timestamp('updated_at', { mode: 'string' }).defaultNow(),
+    fine_amount: text('fine_amount').notNull(),
+    created_at: timestamp('created_at', { mode: 'string' }).defaultNow(),
+    updated_at: timestamp('updated_at', { mode: 'string' }).defaultNow(),
 });
 
 export const offendersTable = pgTable('offenders', {
-    id: serial('id').primaryKey(),
+    id: bigint('id', { mode: 'bigint' }).primaryKey(),
     name: text('name').notNull(),
-    fatherName: text('father_name').notNull(),
-    nationalIdNumber: text('national_id_number'),
-    driverLicenseNumber: text('driver_license_number'),
+    father_name: text('father_name').notNull(),
+    national_id_number: text('national_id_number'),
+    driver_license_number: text('driver_license_number'),
     address: text('address').notNull(),
-    createdAt: timestamp('created_at', { mode: 'string' }).defaultNow(),
-    updatedAt: timestamp('updated_at', { mode: 'string' }).defaultNow(),
+    created_at: timestamp('created_at', { mode: 'string' }).defaultNow(),
+    updated_at: timestamp('updated_at', { mode: 'string' }).defaultNow(),
 });
 
 export const vehiclesTable = pgTable('vehicles', {
-    id: serial('id').primaryKey(),
-    vehicleNumber: integer('vehicle_number').notNull(),
-    vehicleCategoriesId: integer('vehicle_categories_id')
+    id: bigint('id', { mode: 'bigint' }).primaryKey(),
+    vehicle_number: text('vehicle_number').notNull(),
+    vehicle_categories_id: integer('vehicle_categories_id')
         .notNull()
         .references(() => vehicleCategoriesTable.id, { onDelete: 'cascade' }),
-    vehicleTypes: text('vehicle_types').notNull(),
-    wheelTax: text('wheel_tax'),
-    vehicleLicenseNumber: text('vehicle_license_number'),
-    createdAt: timestamp('created_at', { mode: 'string' }).defaultNow(),
-    updatedAt: timestamp('updated_at', { mode: 'string' }).defaultNow(),
+    vehicle_types: text('vehicle_types').notNull(),
+    wheel_tax: text('wheel_tax'),
+    vehicle_license_number: text('vehicle_license_number'),
+    created_at: timestamp('created_at', { mode: 'string' }).defaultNow(),
+    updated_at: timestamp('updated_at', { mode: 'string' }).defaultNow(),
 });
 
 export const offenderVehiclesTable = pgTable('offender_vehicles', {
-    id: serial('id').primaryKey(),
-    offenderId: integer('offender_id')
+    id: bigint('id', { mode: 'bigint' }).primaryKey(),
+    offender_id: bigint('offender_id', { mode: "bigint" })
         .notNull()
         .references(() => offendersTable.id, { onDelete: 'cascade' }),
-    vehicleId: integer('vehicle_id')
+    vehicle_id: bigint('vehicle_id', { mode: "bigint" })
         .notNull()
         .references(() => vehiclesTable.id, { onDelete: 'cascade' }),
-    createdAt: timestamp('created_at', { mode: 'string' }).defaultNow(),
-    updatedAt: timestamp('updated_at', { mode: 'string' }).defaultNow(),
+    created_at: timestamp('created_at', { mode: 'string' }).defaultNow(),
+    updated_at: timestamp('updated_at', { mode: 'string' }).defaultNow(),
 });
 
 export const seizedItemsTable = pgTable('seized_items', {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
-    createdAt: timestamp('created_at', { mode: 'string' }).defaultNow(),
-    updatedAt: timestamp('updated_at', { mode: 'string' }).defaultNow(),
+    created_at: timestamp('created_at', { mode: 'string' }).defaultNow(),
+    updated_at: timestamp('updated_at', { mode: 'string' }).defaultNow(),
 });
 
 export const vehicleSeizureRecordsTable = pgTable('vehicle_seizure_records', {
-    id: serial('id').primaryKey(),
+    id: bigint('id', { mode: 'bigint' }).primaryKey(),
 
-    offenderVehiclesId: integer('offender_vehicles')
+    offender_vehicle_id: bigint('offender_vehicle_id', { mode: "bigint" })
         .notNull()
         .references(() => offenderVehiclesTable.id, { onDelete: 'cascade' }),
 
-    disciplinaryCommittedId: integer('disciplinary_committed_id')
+    disciplinary_committed_id: integer('disciplinary_committed_id')
         .notNull()
         .references(() => disciplinaryCommittedTable.id, { onDelete: 'cascade' }),
 
-    officerId: integer('officer_id')
+    officer_id: integer('officer_id')
         .notNull()
         .references(() => usersTable.id, { onDelete: 'cascade' }),
 
-    seizedDate: text('seized_date').notNull(),
-    seizureLocation: text('seizure_location').notNull(),
+    seized_date: text('seized_date').notNull(),
+    seizure_location: text('seizure_location').notNull(),
 
-    actionDate: text('action_date'),
-    caseNumber: integer('case_number'),
+    action_date: text('action_date'),
+    case_number: integer('case_number'),
 
-    seizedItemId: integer('seized_item')
+    seized_item_id: integer('seized_item_id')
         .notNull()
         .references(() => seizedItemsTable.id, { onDelete: 'cascade' }),
 
-    createdAt: timestamp('created_at', { mode: 'string' }).defaultNow(),
-    updatedAt: timestamp('updated_at', { mode: 'string' }).defaultNow(),
+    created_at: timestamp('created_at', { mode: 'string' }).defaultNow(),
+    updated_at: timestamp('updated_at', { mode: 'string' }).defaultNow(),
 });
-

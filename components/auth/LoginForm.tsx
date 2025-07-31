@@ -15,6 +15,7 @@ import SubmitButton from '../ui/submit-button';
 import { signIn } from 'next-auth/react';
 import FormError from './FormError';
 import { useRouter } from 'next/navigation';
+import { seedDisciplinaryData } from '@/server/action/seedData';
 
 const LoginForm = () => {
     const [isPending, startTransition] = useTransition();
@@ -29,27 +30,28 @@ const LoginForm = () => {
     });
 
     const onSubmit = async (data: LoginSchemaType) => {
-        const { name, password } = data;
-        startTransition(async () => {
-            const res = await signIn("credentials", {
-                name,
-                password,
-                redirect: false
-            })
-            console.log(res)
-            if (res?.error) {
-                switch (res.error) {
-                    case "CredentialsSignin":
-                        setError("အမည် သိုမဟုတ် စကားဝှက်မှားယွင်းနေပါသည်။");
-                        break;
-                    default:
-                        setError("Something went wrong. Please try again.");
-                        break;
-                }
-            } else {
-                router.push('/admin/dashboard');
-            }
-        })
+        await seedDisciplinaryData()
+        // const { name, password } = data;
+        // startTransition(async () => {
+        //     const res = await signIn("credentials", {
+        //         name,
+        //         password,
+        //         redirect: false
+        //     })
+        //     console.log(res)
+        //     if (res?.error) {
+        //         switch (res.error) {
+        //             case "CredentialsSignin":
+        //                 setError("အမည် သိုမဟုတ် စကားဝှက်မှားယွင်းနေပါသည်။");
+        //                 break;
+        //             default:
+        //                 setError("Something went wrong. Please try again.");
+        //                 break;
+        //         }
+        //     } else {
+        //         router.push('/admin/dashboard');
+        //     }
+        // })
     };
 
     return (

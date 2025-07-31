@@ -25,14 +25,14 @@ const handler = NextAuth({
                 const users = await db
                     .select({
                         id: usersTable.id,
-                        userName: usersTable.userName,
+                        user_name: usersTable.user_name,
                         name: usersTable.name,
                         password: usersTable.password,
                         roleName: rolesTable.name,
                     })
                     .from(usersTable)
-                    .leftJoin(rolesTable, eq(usersTable.roleId, rolesTable.id))
-                    .where(eq(usersTable.userName, name))
+                    .leftJoin(rolesTable, eq(usersTable.role_id, rolesTable.id))
+                    .where(eq(usersTable.user_name, name))
                     .limit(1);
 
                 const user = users[0];
@@ -53,7 +53,7 @@ const handler = NextAuth({
 
                 return {
                     id: user.id.toString(),
-                    userName: user.userName,
+                    userName: user.user_name,
                     name: user.name,
                     roleName: user.roleName,
                 };
