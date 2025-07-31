@@ -36,6 +36,7 @@ const LoginForm = () => {
                 password,
                 redirect: false
             })
+            console.log(res)
             if (res?.error) {
                 switch (res.error) {
                     case "CredentialsSignin":

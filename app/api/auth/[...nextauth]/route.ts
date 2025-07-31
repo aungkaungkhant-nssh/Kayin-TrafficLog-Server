@@ -1,46 +1,66 @@
-import NextAuth from "next-auth"
-import { DrizzleAdapter } from "@auth/drizzle-adapter"
-import { eq } from "drizzle-orm"
-import Credentials from "next-auth/providers/credentials"
-import bcrypt from 'bcryptjs'
-import { userTable } from "@/db/schema"
-import { loginSchema } from "@/types/login.schema"
-import { db } from "@/db"
+import NextAuth from "next-auth";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { eq } from "drizzle-orm";
+import Credentials from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import { rolesTable, usersTable } from "@/db/schema";
+import { loginSchema } from "@/types/login.schema";
+import { db } from "@/db";
 
 const handler = NextAuth({
     adapter: DrizzleAdapter(db),
     secret: process.env.AUTH_SECRET,
-    session: { strategy: 'jwt' },
+    session: { strategy: "jwt" },
     providers: [
         Credentials({
             credentials: {
                 name: {},
-                password: {}
+                password: {},
             },
 
             authorize: async (credential) => {
                 const { name, password } = await loginSchema.parseAsync(credential);
 
-                const user = await db.query.userTable.findFirst({
-                    where: eq(userTable.name, name)
-                });
+                // Join users and roles to get role name
+                const users = await db
+                    .select({
+                        id: usersTable.id,
+                        userName: usersTable.userName,
+                        name: usersTable.name,
+                        password: usersTable.password,
+                        roleName: rolesTable.name,
+                    })
+                    .from(usersTable)
+                    .leftJoin(rolesTable, eq(usersTable.roleId, rolesTable.id))
+                    .where(eq(usersTable.userName, name))
+                    .limit(1);
+
+                const user = users[0];
 
                 if (!user || !user.password) {
-                    return null
+                    return null;
                 }
 
                 const passwordMatch = await bcrypt.compare(password, user.password);
                 if (!passwordMatch) {
-                    return null
+                    return null;
+                }
+
+                // Check if user role is 'admin'
+                if (user.roleName !== "admin") {
+                    return null;
                 }
 
                 return {
                     id: user.id.toString(),
-                    name: user.name
+                    userName: user.userName,
+                    name: user.name,
+                    roleName: user.roleName,
                 };
             }
-        })
-    ]
-})
+        }),
+    ],
+});
 
 export { handler as GET, handler as POST, handler as auth };
+
