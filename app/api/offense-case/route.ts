@@ -2,11 +2,13 @@
 // import { NextRequest } from "next/server";
 // import type { InferInsertModel } from "drizzle-orm";
 // import { offenseCasesTable } from "@/db/schema";
-import { insertOffenseCases } from "@/server/action/offensecases";
+import { getFilteredOffenseCases, insertOffenseCases } from "@/server/action/offensecases";
 
 import { NextRequest } from "next/server";
 
 // type OffenseCaseInsert = InferInsertModel<typeof offenseCasesTable>;
+
+
 
 export async function POST(req: NextRequest) {
     try {
@@ -33,30 +35,36 @@ export async function POST(req: NextRequest) {
     }
 }
 
-// export async function GET(req: NextRequest) {
-//     const { searchParams } = new URL(req.url);
-//     const startDate = searchParams.get('startDate');
-//     const endDate = searchParams.get('endDate');
+export async function GET(req: NextRequest) {
+    const { searchParams } = new URL(req.url);
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
 
-//     if (!startDate || !endDate) {
-//         return new Response(JSON.stringify({ error: "Missing startDate or endDate" }), {
-//             status: 400,
-//             headers: { "Content-Type": "application/json" },
-//         });
-//     }
+    if (!startDate || !endDate) {
+        return new Response(JSON.stringify({ error: "Missing startDate or endDate" }), {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+        });
+    }
 
-//     try {
-//         const data = await getFilteredOffenseCases(startDate, endDate);
-//         return new Response(JSON.stringify({ data }), {
-//             status: 200,
-//             headers: { "Content-Type": "application/json" },
-//         });
-//     } catch (err) {
-//         console.error("GET /api/offense-cases error:", err);
-//         return new Response(JSON.stringify({ error: "Server error" }), {
-//             status: 500,
-//             headers: { "Content-Type": "application/json" },
-//         });
-//     }
-// }
+    try {
+        const data = await getFilteredOffenseCases(startDate, endDate);
+
+        // BigInt-safe serialization
+        const replacer = (_key: string, value: any) =>
+            typeof value === 'bigint' ? value.toString() : value;
+
+        return new Response(JSON.stringify(data, replacer), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+        });
+    } catch (err) {
+        console.error("GET /api/offense-cases error:", err);
+        return new Response(JSON.stringify({ error: "Server error" }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+        });
+    }
+}
+
 
