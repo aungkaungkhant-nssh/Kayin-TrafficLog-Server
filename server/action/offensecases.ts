@@ -13,7 +13,7 @@ import {
     seizedItemsTable,
     vehicleCategoriesTable,
 } from "@/db/schema";
-import { and, between, eq,isNotNull,or } from "drizzle-orm";
+import { and, between, eq, isNotNull, or } from "drizzle-orm";
 
 // Type for inserting rows
 // type OffenseCaseInsert = InferInsertModel<typeof offenseCasesTable>;

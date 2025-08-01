@@ -14,7 +14,6 @@ export async function POST(req: NextRequest) {
     try {
         const res = await req.json();
         const data = res.data;
-        console.log("wk")
         if (!Array.isArray(data) || data.length === 0) {
             return new Response(JSON.stringify({ error: "Invalid or empty data array" }), {
                 status: 400,
