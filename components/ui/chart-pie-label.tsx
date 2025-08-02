@@ -15,33 +15,38 @@ import {
 
 export const description = "A pie chart with a label list"
 
-const chartData = [
-    { browser: "car", visitors: 275, fill: "hsl(240 100% 25%)" },
-    { browser: "cycle", visitors: 200, fill: "hsl(10 80% 45%)" },
-    { browser: "oway", visitors: 173, fill: "hsl(140 60% 40%)" },
-    { browser: "hlgyi", visitors: 90, fill: "hsl(45 100% 50%" },
-]
+type ChartDataItem = {
+    categoryName: string
+    count: number
+    fill: string
+}
+
+type ChartPieLabelListProps = {
+    chartData: ChartDataItem[]
+}
+
+
 
 const chartConfig = {
-    car: {
+    ကား: {
         label: "ကား",
         color: "hsl(240 100% 25%)",      // Navy Blue
     },
-    cycle: {
+    ဆိုင်ကယ်: {
         label: "ဆိုင်ကယ်",
         color: "hsl(10 80% 45%)",        // Strong Red-Orange
     },
-    oway: {
+    သုံးဘီး: {
         label: "သုံးဘီး",
         color: "hsl(140 60% 40%)",       // Deep Green
     },
-    hlgyi: {
+    ထော်လာဂျီ: {
         label: "ထော်လာဂျီ",
         color: "hsl(45 100% 50%)",       // Golden Yellow
     }
 } satisfies ChartConfig
 
-export function ChartPieLabelList() {
+export function ChartPieLabelList({ chartData }: ChartPieLabelListProps) {
 
     return (
         <Card className="flex flex-col">
@@ -56,13 +61,13 @@ export function ChartPieLabelList() {
                         <Tooltip
                             content={<ChartTooltipContent
                                 config={chartConfig}
-                                nameKey="browser"
+                                nameKey="categoryName"
                                 hideLabel={true}
                             />}
                         />
-                        <Pie data={chartData} dataKey="visitors">
+                        <Pie data={chartData} dataKey="count">
                             <LabelList
-                                dataKey="browser"
+                                dataKey="categoryName"
                                 className="fill-background"
                                 stroke="none"
                                 fontSize={12}

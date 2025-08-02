@@ -31,108 +31,93 @@ import { LIMIT } from "@/utils/constant/limit"
 
 // Your Schedule type
 export type Schedule = {
-    စဉ်: number
-    ဖမ်းဆည်းရက်စွဲ: string
-    ယာဉ်အမှတ်: string
-    အမျိုးအမည်: string | null
-    နေရာ: string | null
-    ယာဉ်မောင်းအမည်: string
-    မှတ်ပုံတင်အမှတ်: string | null
-    အဘအမည်: string | null
-    နေရပ်လိပ်စာ: string | null
-    ပုဒ်မ: string | null
-    ပုဒ်မအကြောင်းအရာ: string | null
-    အရေးယူအရာရှိ: string | null
-    ဒဏ်ဆောင်ရက်: string | null
-    ရာကြီးအမှတ်: string | null
-    ဒဏ်ကြေး: string | null
-    သိမ်းဆည်းပစ္စည်း: string | null
+    no: number
+    seized_date: string
+    vehicle_number: string
+    vehicle_types: string | null
+    seizure_location: string | null
+    offender_name: string
+    national_id_number: string | null
+    offender_father_name: string | null
+    offender_address: string | null
+    article_number: string | null
+    offense_name: string | null
+    officer_name: string | null
+    action_date: string | null
+    case_number: number | null
+    fine_amount: string | null
+    seized_item_name: string | null
+    seizureRecordCount: number | null
 }
 
 // Your full columns list
-export const columns: ColumnDef<Schedule>[] = [
-    { accessorKey: "စဉ်", header: "စဉ်" },
-    { accessorKey: "ဖမ်းဆည်းရက်စွဲ", header: "ဖမ်းဆည်းရက်စွဲ" },
-    { accessorKey: "ယာဉ်အမှတ်", header: "ယာဉ်အမှတ်" },
-    {
-        accessorKey: "အမျိုးအမည်",
-        header: "အမျိုးအမည်",
-        cell: ({ row }) => row.getValue("အမျိုးအမည်") || "-",
-    },
-    {
-        accessorKey: "နေရာ",
-        header: "နေရာ",
-        cell: ({ row }) => row.getValue("နေရာ") || "-",
-    },
-    { accessorKey: "ယာဉ်မောင်းအမည်", header: "ယာဉ်မောင်းအမည်" },
-    {
-        accessorKey: "မှတ်ပုံတင်အမှတ်",
-        header: "မှတ်ပုံတင်အမှတ်",
-        cell: ({ row }) => row.getValue("မှတ်ပုံတင်အမှတ်") || "-",
-    },
-    {
-        accessorKey: "အဘအမည်",
-        header: "အဘအမည်",
-        cell: ({ row }) => row.getValue("အဘအမည်") || "-",
-    },
-    {
-        accessorKey: "နေရပ်လိပ်စာ",
-        header: "နေရပ်လိပ်စာ",
-        cell: ({ row }) => row.getValue("နေရပ်လိပ်စာ") || "-",
-    },
-    {
-        accessorKey: "ပုဒ်မ",
-        header: "ပုဒ်မ",
-        cell: ({ row }) => row.getValue("ပုဒ်မ") || "-",
-    },
-    {
-        accessorKey: "ပုဒ်မအကြောင်းအရာ",
-        header: "ပုဒ်မအကြောင်းအရာ",
-        cell: ({ row }) => row.getValue("ပုဒ်မအကြောင်းအရာ") || "-",
-    },
-    {
-        accessorKey: "အရေးယူအရာရှိ",
-        header: "အရေးယူအရာရှိ",
-        cell: ({ row }) => row.getValue("အရေးယူအရာရှိ") || "-",
-    },
-    {
-        accessorKey: "ဒဏ်ဆောင်ရက်",
-        header: "ဒဏ်ဆောင်ရက်",
-        cell: ({ row }) => row.getValue("ဒဏ်ဆောင်ရက်") || "-",
-    },
-    {
-        accessorKey: "ရာကြီးအမှတ်",
-        header: "ရာကြီးအမှတ်",
-        cell: ({ row }) => row.getValue("ရာကြီးအမှတ်") || "-",
-    },
-    {
-        accessorKey: "ဒဏ်ကြေး",
-        header: "ဒဏ်ကြေး",
-        cell: ({ row }) => row.getValue("ဒဏ်ကြေး") || "-",
-    },
-    {
-        accessorKey: "သိမ်းဆည်းပစ္စည်း",
-        header: "သိမ်းဆည်းပစ္စည်း",
-        cell: ({ row }) => row.getValue("သိမ်းဆည်းပစ္စည်း") || "-",
-    },
-]
-
-// The columns you want to appear in the toggle dropdown and default selected
-// const toggleableColumnKeys = [
-//     "စဉ်",
-//     "အရေးယူရက်စွဲ",
-//     "ယာဉ်အမှတ်",
-//     "အမျိုးအမည်",
-//     "နေရာ",
-//     "ယာဉ်မောင်းအမည်",
-//     "မှတ်ပုံတင်အမှတ်",
-//     "ပုဒ်မ",
-//     "ပုဒ်မအကြောင်းအရာ",
-//     "အရေးယူအရာရှိ",
-//     "ဒဏ်ဆောင်ရက်",
-//     "ရာကြီးအမှတ်",
-//     "ဒဏ်ကြေး",
+// export const columns: ColumnDef<Schedule>[] = [
+//     { accessorKey: "စဉ်", header: "စဉ်" },
+//     { accessorKey: "ဖမ်းဆည်းရက်စွဲ", header: "ဖမ်းဆည်းရက်စွဲ" },
+//     { accessorKey: "ယာဉ်အမှတ်", header: "ယာဉ်အမှတ်" },
+//     {
+//         accessorKey: "အမျိုးအမည်",
+//         header: "အမျိုးအမည်",
+//         cell: ({ row }) => row.getValue("အမျိုးအမည်") || "-",
+//     },
+//     {
+//         accessorKey: "နေရာ",
+//         header: "နေရာ",
+//         cell: ({ row }) => row.getValue("နေရာ") || "-",
+//     },
+//     { accessorKey: "ယာဉ်မောင်းအမည်", header: "ယာဉ်မောင်းအမည်" },
+//     {
+//         accessorKey: "မှတ်ပုံတင်အမှတ်",
+//         header: "မှတ်ပုံတင်အမှတ်",
+//         cell: ({ row }) => row.getValue("မှတ်ပုံတင်အမှတ်") || "-",
+//     },
+//     {
+//         accessorKey: "အဘအမည်",
+//         header: "အဘအမည်",
+//         cell: ({ row }) => row.getValue("အဘအမည်") || "-",
+//     },
+//     {
+//         accessorKey: "နေရပ်လိပ်စာ",
+//         header: "နေရပ်လိပ်စာ",
+//         cell: ({ row }) => row.getValue("နေရပ်လိပ်စာ") || "-",
+//     },
+//     {
+//         accessorKey: "ပုဒ်မ",
+//         header: "ပုဒ်မ",
+//         cell: ({ row }) => row.getValue("ပုဒ်မ") || "-",
+//     },
+//     {
+//         accessorKey: "ပုဒ်မအကြောင်းအရာ",
+//         header: "ပုဒ်မအကြောင်းအရာ",
+//         cell: ({ row }) => row.getValue("ပုဒ်မအကြောင်းအရာ") || "-",
+//     },
+//     {
+//         accessorKey: "အရေးယူအရာရှိ",
+//         header: "အရေးယူအရာရှိ",
+//         cell: ({ row }) => row.getValue("အရေးယူအရာရှိ") || "-",
+//     },
+//     {
+//         accessorKey: "ဒဏ်ဆောင်ရက်",
+//         header: "ဒဏ်ဆောင်ရက်",
+//         cell: ({ row }) => row.getValue("ဒဏ်ဆောင်ရက်") || "-",
+//     },
+//     {
+//         accessorKey: "ရာကြီးအမှတ်",
+//         header: "ရာကြီးအမှတ်",
+//         cell: ({ row }) => row.getValue("ရာကြီးအမှတ်") || "-",
+//     },
+//     {
+//         accessorKey: "ဒဏ်ကြေး",
+//         header: "ဒဏ်ကြေး",
+//         cell: ({ row }) => row.getValue("ဒဏ်ကြေး") || "-",
+//     },
+//     {
+//         accessorKey: "သိမ်းဆည်းပစ္စည်း",
+//         header: "သိမ်းဆည်းပစ္စည်း",
+//         cell: ({ row }) => row.getValue("သိမ်းဆည်းပစ္စည်း") || "-",
+//     },
 // ]
+
 
 function ColumnToggleDropdown({
     columns,

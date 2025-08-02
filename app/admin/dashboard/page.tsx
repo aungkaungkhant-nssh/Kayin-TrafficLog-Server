@@ -1,98 +1,54 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import DashboardCard from '@/components/dashboard/DashboardCard';
 import { ChartBarLabel } from '@/components/ui/BarChart'
 import { ChartPieLabelList } from '@/components/ui/chart-pie-label';
-import { columns, Schedule } from "@/components/data/columns";
+import { columns } from "@/components/data/columns";
 import { DataTable } from '@/components/data/data-table';
 import { caseColumnKeys } from '@/utils/constant/columnkeys';
+import { getDashboardCount } from '@/server/action/dashboardData';
+import Loading from './Loading';
+import { getOffenderMostCount } from '@/server/action/offensecaseData';
 
 const page = async () => {
-  const dummyScheduleData: Schedule[] = [
-    {
-      စဉ်: 1,
-      အရေးယူရက်စွဲ: "2025-07-25",
-      ယာဉ်အမှတ်: "YGN-1234",
-      အမျိုးအမည်: "Toyota Vitz",
-      နေရာ: "ရန်ကုန်",
-      ယာဉ်မောင်းအမည်: "ကိုကို",
-      မှတ်ပုံတင်အမှတ်: "12/PaKaNa(N)123456",
-      အဘအမည်: "ဦးမောင်မောင်",
-      နေရပ်လိပ်စာ: "No.23, 9th Street, လှိုင်",
-      ပုဒ်မ: "၅၂",
-      ပုဒ်မအကြောင်းအရာ: "မူးယစ်ဆေးဝါးသယ်ယူ",
-      အရေးယူအရာရှိ: "ရဲအရာရှိ ညိုညို",
-      ဒဏ်ဆောင်ရက်: "၃ရက်",
-      ရာကြီးအမှတ်: "RY-2345",
-      ဒဏ်ကြေး: "၁၀၀၀၀",
-      သိမ်းဆည်းပစ္စည်း: "ယာဉ်",
-    },
-    {
-      စဉ်: 2,
-      အရေးယူရက်စွဲ: "2025-07-20",
-      ယာဉ်အမှတ်: "MDY-5678",
-      အမျိုးအမည်: "Honda Fit",
-      နေရာ: "မန္တလေး",
-      ယာဉ်မောင်းအမည်: "မောင်မောင်",
-      မှတ်ပုံတင်အမှတ်: "9/AhLaNa(N)654321",
-      အဘအမည်: "ဦးအောင်အောင်",
-      နေရပ်လိပ်စာ: "အမှတ်(၁၂၄), ပုသိမ်ရပ်ကွက်",
-      ပုဒ်မ: "၄၄",
-      ပုဒ်မအကြောင်းအရာ: "အရှိန်လွန်ယာဉ်မောင်း",
-      အရေးယူအရာရှိ: "ရဲအရာရှိ စန်းစန်း",
-      ဒဏ်ဆောင်ရက်: null,
-      ရာကြီးအမှတ်: null,
-      ဒဏ်ကြေး: "၂၀၀၀",
-      သိမ်းဆည်းပစ္စည်း: null,
-    },
-    {
-      စဉ်: 3,
-      အရေးယူရက်စွဲ: "2025-07-15",
-      ယာဉ်အမှတ်: "NPT-0001",
-      အမျိုးအမည်: null,
-      နေရာ: "နေပြည်တော်",
-      ယာဉ်မောင်းအမည်: "ဇော်ဇော်",
-      မှတ်ပုံတင်အမှတ်: null,
-      အဘအမည်: null,
-      နေရပ်လိပ်စာ: null,
-      ပုဒ်မ: null,
-      ပုဒ်မအကြောင်းအရာ: null,
-      အရေးယူအရာရှိ: null,
-      ဒဏ်ဆောင်ရက်: null,
-      ရာကြီးအမှတ်: null,
-      ဒဏ်ကြေး: null,
-      သိမ်းဆည်းပစ္စည်း: null,
-    },
-  ];
+  const data = await getDashboardCount();
+  const mostOffenderCount = await getOffenderMostCount()
+  const { totalFineAmount, offendersCount, filedCasesCount, unfiledCasesCount, categoryCounts } = data;
 
   return (
-    <div className="space-y-4">
-      <DashboardCard
-        totalFineAmount={100000}
-        offendersCount={50}
-        unfiledCasesCount={20}
-        filedCasesCount={30}
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ChartBarLabel />
-        <ChartPieLabelList />
-      </div>
-      <hr />
-      <div>
-        <DataTable
-          data={dummyScheduleData}
-          columns={columns}
-          scheduleTitle={"ပြစ်မှုများအများဆုံး ကျူးလွန်သူမှတ်တမ်းများ"}
-          meta={{ totalCount: dummyScheduleData.length, hasNextPage: false }}
-          currentPage={1}
-          showPagination={false}
-          showSearch={false}
-          buttonText="အားလုံးကြည့်မည်"
-          buttonRedirectPath="/trafficlog/offender"
-          toggleableColumnKeys={caseColumnKeys}
+    <Suspense fallback={<Loading />}>
+      <div className="space-y-4">
+        <DashboardCard
+          totalFineAmount={totalFineAmount}
+          offendersCount={offendersCount}
+          unfiledCasesCount={filedCasesCount}
+          filedCasesCount={unfiledCasesCount}
         />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ChartBarLabel />
+          <ChartPieLabelList
+            chartData={categoryCounts}
+          />
+        </div>
+        <hr />
+        <div>
+          <DataTable
+            data={mostOffenderCount}
+            columns={columns}
+            scheduleTitle={"ပြစ်မှုများအများဆုံး ကျူးလွန်သူမှတ်တမ်းများ"}
+            meta={{ totalCount: mostOffenderCount.length, hasNextPage: false }}
+            currentPage={1}
+            showPagination={false}
+            showSearch={false}
+            buttonText="အားလုံးကြည့်မည်"
+            buttonRedirectPath="/trafficlog/offender"
+            toggleableColumnKeys={caseColumnKeys}
+          />
+        </div>
       </div>
-    </div>
+
+    </Suspense>
+
   )
 }
 

@@ -61,12 +61,29 @@ export async function getDashboardCount() {
         )
         .groupBy(vehicleCategoriesTable.name);
 
+    const allCategoriesWithFill = [
+        { categoryName: "ကား", fill: "hsl(240 100% 25%)" },
+        { categoryName: "ဆိုင်ကယ်", fill: "hsl(10 80% 45%)" },
+        { categoryName: "သုံးဘီး", fill: "hsl(140 60% 40%)" },
+        { categoryName: "ထော်လာဂျီ", fill: "hsl(45 100% 50%)" },
+    ];
+
+    const categoryMap = new Map(
+        categoryCounts.map((item) => [item.categoryName, item.count])
+    );
+
+    const formattedCategories = allCategoriesWithFill.map(({ categoryName, fill }) => ({
+        categoryName,
+        count: categoryMap.get(categoryName) ?? 0,
+        fill,
+    }));
+
     return {
         totalFineAmount,
         offendersCount,
         filedCasesCount,
         unfiledCasesCount: offendersCount - filedCasesCount,
-        categoryCounts
+        categoryCounts: formattedCategories
     };
 }
 
@@ -99,7 +116,6 @@ export async function getDashboardChart(year: number) {
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ];
-
     const filledData = monthNames.slice(0, currentMonth + 1).map((month, idx) => {
         const match = rawData.find(r => r.month_order === idx + 1);
         return {
@@ -108,9 +124,7 @@ export async function getDashboardChart(year: number) {
         };
     });
 
-    return {
-        chartData: filledData,
-    };
+    return filledData
 }
 
 

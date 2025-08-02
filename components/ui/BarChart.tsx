@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState, useTransition } from "react"
 import { Bar, BarChart, CartesianGrid, LabelList, Tooltip, XAxis } from "recharts"
 
 import {
@@ -22,33 +22,28 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { client } from "@/server/client"
 
 export const description = "A bar chart with a label"
-
-const allChartData = {
-    2023: [
-        { month: "January", count: 120 },
-        { month: "February", count: 210 },
-        { month: "March", count: 170 },
-        { month: "April", count: 90 },
-        { month: "May", count: 140 },
-        { month: "June", count: 155 },
-    ],
-    2024: [
-        { month: "January", count: 186 },
-        { month: "February", count: 305 },
-        { month: "March", count: 237 },
-        { month: "April", count: 73 },
-        { month: "May", count: 209 },
-        { month: "June", count: 214 },
-    ]
-}
 
 const chartConfig = {} satisfies ChartConfig
 
 export function ChartBarLabel() {
-    const [year, setYear] = useState("2024")
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 4 }, (_, i) => currentYear - i);
+    const [year, setYear] = useState(currentYear.toString())
+    const [isPending, startTransition] = useTransition();
+    const [data, setData] = useState([])
 
+    useEffect(() => {
+        startTransition(async () => {
+            const res = await client.get(`/api/dashboard/chart?year=${year}`);
+            if (res.status === 200) {
+                setData(res.data)
+            }
+
+        })
+    }, [year])
     return (
         <Card>
             <CardHeader>
@@ -59,8 +54,8 @@ export function ChartBarLabel() {
                             <SelectValue placeholder="Select year" />
                         </SelectTrigger>
                         <SelectContent>
-                            {Object.keys(allChartData).map((yr) => (
-                                <SelectItem key={yr} value={yr}>
+                            {years.map((yr) => (
+                                <SelectItem key={yr} value={yr.toString()}>
                                     {yr}
                                 </SelectItem>
                             ))}
@@ -69,37 +64,44 @@ export function ChartBarLabel() {
                 </div>
             </CardHeader>
             <CardContent>
-                <ChartContainer config={chartConfig}>
-                    <BarChart
-                        data={allChartData[year]}
-                        margin={{ top: 20 }}
-                    >
-                        <CartesianGrid vertical={false} />
-                        <XAxis
-                            dataKey="month"
-                            tickLine={false}
-                            tickMargin={10}
-                            axisLine={false}
-                            tickFormatter={(value) => value.slice(0, 3)}
-                        />
-                        <Tooltip
-                            content={<ChartTooltipContent
-                                config={chartConfig}
-                                nameKey="count"
-                                hideLabel={true}
-                            />}
-                        />
-                        <Bar dataKey="count" fill="hsl(240 100% 25%)" radius={8}>
-                            <LabelList
-                                position="top"
-                                offset={12}
-                                className="fill-foreground"
-                                fontSize={12}
+                {isPending ? (
+                    <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+                        Loading chart...
+                    </div>
+                ) : (
+                    <ChartContainer config={chartConfig}>
+                        <BarChart
+                            data={data}
+                            margin={{ top: 20 }}
+                        >
+                            <CartesianGrid vertical={false} />
+                            <XAxis
+                                dataKey="month"
+                                tickLine={false}
+                                tickMargin={10}
+                                axisLine={false}
+                                tickFormatter={(value) => value.slice(0, 3)}
                             />
-                        </Bar>
-                    </BarChart>
-                </ChartContainer>
+                            <Tooltip
+                                content={<ChartTooltipContent
+                                    config={chartConfig}
+                                    nameKey="count"
+                                    hideLabel={true}
+                                />}
+                            />
+                            <Bar dataKey="count" fill="hsl(240 100% 25%)" radius={8}>
+                                <LabelList
+                                    position="top"
+                                    offset={12}
+                                    className="fill-foreground"
+                                    fontSize={12}
+                                />
+                            </Bar>
+                        </BarChart>
+                    </ChartContainer>
+                )}
             </CardContent>
+
         </Card>
     )
 }
