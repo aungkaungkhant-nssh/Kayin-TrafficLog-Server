@@ -12,8 +12,12 @@ interface Props {
 const page = async ({ searchParams }: Props) => {
     const page = searchParams.page ?? "1"; // default to 1 if undefined
     const pageNumber = parseInt(Array.isArray(page) ? page[0] : page);
+    const search = searchParams.search ?? "";
     const res = await getPaginatedSeizureRecords({
-        filterType: 'null', page: pageNumber, limit: 10
+        filterType: 'null',
+        page: pageNumber,
+        limit: 10,
+        search: Array.isArray(search) ? search[0] : search,
     });
 
     return (

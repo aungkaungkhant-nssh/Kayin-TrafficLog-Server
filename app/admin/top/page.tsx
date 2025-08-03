@@ -11,7 +11,13 @@ interface Props {
 const page = async ({ searchParams }: Props) => {
     const page = searchParams.page ?? "1"; // default to 1 if undefined
     const pageNumber = parseInt(Array.isArray(page) ? page[0] : page);
-    const res = await getOffenderMostCount({})
+    const search = searchParams.search ?? "";
+    
+    const res = await getOffenderMostCount({
+        page: pageNumber,
+        limit: 10,
+        search: Array.isArray(search) ? search[0] : search,
+    })
 
     return (
         <div className="mt-4">

@@ -13,7 +13,7 @@ import {
     seizedItemsTable,
     vehicleCategoriesTable,
 } from "@/db/schema";
-import { and, between, eq, isNotNull, or, isNull, sql } from "drizzle-orm";
+import { and, between, eq, isNotNull, or, isNull, sql, like } from "drizzle-orm";
 
 
 export async function insertOffenseCases(data: any[]) {
@@ -220,9 +220,11 @@ export async function getPaginatedSeizureRecords({
     filterType,
     page = 1,
     limit = 10,
-}: GetJoinedSeizureRecordsParams) {
+    search,
+}: GetJoinedSeizureRecordsParams & { search?: string }) {
     const offset = (page - 1) * limit;
 
+    // Base filter based on filterType
     const filterCondition =
         filterType === 'null'
             ? and(
@@ -234,6 +236,21 @@ export async function getPaginatedSeizureRecords({
                 isNotNull(vehicleSeizureRecordsTable.action_date)
             );
 
+    // Optional search condition
+    const searchCondition = search
+        ? or(
+            like(offendersTable.name, `%${search}%`),
+            like(offendersTable.national_id_number, `%${search}%`),
+            like(offendersTable.father_name, `%${search}%`),
+            like(vehiclesTable.vehicle_number, `%${search}%`)
+        )
+        : undefined;
+
+    const whereCondition = searchCondition
+        ? and(filterCondition, searchCondition)
+        : filterCondition;
+
+    // Fetch paginated data
     const records = await db
         .select({
             action_date: vehicleSeizureRecordsTable.action_date,
@@ -284,35 +301,35 @@ export async function getPaginatedSeizureRecords({
         .innerJoin(usersTable, eq(vehicleSeizureRecordsTable.officer_id, usersTable.id))
         .innerJoin(seizedItemsTable, eq(vehicleSeizureRecordsTable.seized_item_id, seizedItemsTable.id))
         .innerJoin(vehicleCategoriesTable, eq(vehiclesTable.vehicle_categories_id, vehicleCategoriesTable.id))
-        .where(filterCondition)
+        .where(whereCondition)
         .limit(limit)
         .offset(offset);
 
+    // Get total count
     const [{ count }] = await db
         .select({ count: sql<number>`count(*)` })
         .from(vehicleSeizureRecordsTable)
-        .where(filterCondition);
+        .innerJoin(offenderVehiclesTable, eq(vehicleSeizureRecordsTable.offender_vehicle_id, offenderVehiclesTable.id))
+        .innerJoin(offendersTable, eq(offenderVehiclesTable.offender_id, offendersTable.id))
+        .innerJoin(vehiclesTable, eq(offenderVehiclesTable.vehicle_id, vehiclesTable.id))
+        .where(whereCondition);
 
     const totalCount = Number(count);
     const totalPages = Math.ceil(totalCount / limit);
     const hasNextPage = offset + records.length < totalCount;
 
-    const data = records
-        .map((item, index) => ({
-            no: index + 1,
-            ...item,
-        }));
-
     return {
-        data,
+        data: records.map((item, index) => ({
+            no: offset + index + 1,
+            ...item,
+        })),
         meta: {
             page,
             limit,
             totalCount,
             totalPages,
             hasNextPage,
-        }
-
+        },
     };
 }
 

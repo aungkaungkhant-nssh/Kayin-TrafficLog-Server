@@ -197,7 +197,15 @@ export function DataTable<TData, TValue>({
             console.log("Button clicked with no redirect")
         }
     }
-
+    const [searchText, setSearchText] = useState("");
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+            const params = new URLSearchParams()
+            if (searchText.trim()) params.set("search", searchText)
+            params.set("page", "1") // always reset to page 1 on search
+            router.push(`?${params.toString()}`)
+        }
+    }
     return (
         <div className="rounded-md w-full">
             <div className="flex flex-wrap items-center justify-between gap-2 py-4">
@@ -213,10 +221,9 @@ export function DataTable<TData, TValue>({
                         <div>
                             <Input
                                 placeholder="Search"
-                                // value={(table.getColumn("teacher_name")?.getFilterValue() as string) ?? ""}
-                                // onChange={(event) =>
-                                //     table.getColumn("teacher_name")?.setFilterValue(event.target.value)
-                                // }
+                                value={searchText}
+                                onChange={(event) => setSearchText(event.target.value)}
+                                onKeyDown={handleKeyDown}
                                 className="max-w-44 md:max-w-sm"
                             />
                         </div>
