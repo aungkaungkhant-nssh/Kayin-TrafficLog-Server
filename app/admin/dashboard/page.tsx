@@ -11,7 +11,7 @@ import { getOffenderMostCount } from '@/server/action/offensecaseData';
 
 const page = async () => {
   const data = await getDashboardCount();
-  const mostOffenderCount = await getOffenderMostCount()
+  const mostOffenderCount = await getOffenderMostCount({})
   const { totalFineAmount, offendersCount, filedCasesCount, unfiledCasesCount, categoryCounts } = data;
 
   return (

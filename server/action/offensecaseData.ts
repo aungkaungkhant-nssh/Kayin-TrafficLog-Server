@@ -2,8 +2,22 @@ import { db } from '@/db';
 import { committedOffensesTable, disciplinaryArticlesTable, disciplinaryCommittedTable, offendersTable, offenderVehiclesTable, seizedItemsTable, usersTable, vehicleSeizureRecordsTable, vehiclesTable } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
 
-export async function getOffenderMostCount() {
-    const result = await db
+export async function getOffenderMostCount({
+    page = 1,
+    limit = 10,
+}: { page?: number; limit?: number } = {}) {
+    const offset = (page - 1) * limit;
+
+    // Get total count
+    const [{ count }] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(vehicleSeizureRecordsTable);
+
+    const totalCount = Number(count);
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Fetch paginated records
+    const records = await db
         .select({
             // Seizure record
             seizure_id: vehicleSeizureRecordsTable.id,
@@ -58,16 +72,26 @@ export async function getOffenderMostCount() {
         .innerJoin(disciplinaryCommittedTable, eq(vehicleSeizureRecordsTable.disciplinary_committed_id, disciplinaryCommittedTable.id))
         .innerJoin(disciplinaryArticlesTable, eq(disciplinaryCommittedTable.disciplinary_articles_id, disciplinaryArticlesTable.id))
         .innerJoin(committedOffensesTable, eq(disciplinaryCommittedTable.committed_offenses_id, committedOffensesTable.id))
+        .limit(limit)
+        .offset(offset);
 
+    const hasNextPage = offset + records.length < totalCount;
 
-    // Filter and return top 10 where seizureRecordCount > 1
-    return result
-        .filter((item) => item.seizureRecordCount > 1)
-        .sort((a, b) => b.seizureRecordCount - a.seizureRecordCount) // Sort descending
-        .slice(0, 10)
-        .map((item, index) => ({
-            no: index + 1,
-            ...item,
-        }));
+    const data = records.map((item, index) => ({
+        no: offset + index + 1,
+        ...item,
+    })).filter((item) => item.seizureRecordCount > 1);
+
+    return {
+        data,
+        meta: {
+            page,
+            limit,
+            totalCount,
+            totalPages,
+            hasNextPage,
+        },
+    };
 }
+
 

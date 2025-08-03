@@ -27,7 +27,6 @@ import {
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { useRouter } from "next/navigation"
-import { LIMIT } from "@/utils/constant/limit"
 
 // Your Schedule type
 export type Schedule = {
@@ -47,76 +46,8 @@ export type Schedule = {
     case_number: number | null
     fine_amount: string | null
     seized_item_name: string | null
-    seizureRecordCount: number | null
+    seizureRecordCount?: number | null
 }
-
-// Your full columns list
-// export const columns: ColumnDef<Schedule>[] = [
-//     { accessorKey: "စဉ်", header: "စဉ်" },
-//     { accessorKey: "ဖမ်းဆည်းရက်စွဲ", header: "ဖမ်းဆည်းရက်စွဲ" },
-//     { accessorKey: "ယာဉ်အမှတ်", header: "ယာဉ်အမှတ်" },
-//     {
-//         accessorKey: "အမျိုးအမည်",
-//         header: "အမျိုးအမည်",
-//         cell: ({ row }) => row.getValue("အမျိုးအမည်") || "-",
-//     },
-//     {
-//         accessorKey: "နေရာ",
-//         header: "နေရာ",
-//         cell: ({ row }) => row.getValue("နေရာ") || "-",
-//     },
-//     { accessorKey: "ယာဉ်မောင်းအမည်", header: "ယာဉ်မောင်းအမည်" },
-//     {
-//         accessorKey: "မှတ်ပုံတင်အမှတ်",
-//         header: "မှတ်ပုံတင်အမှတ်",
-//         cell: ({ row }) => row.getValue("မှတ်ပုံတင်အမှတ်") || "-",
-//     },
-//     {
-//         accessorKey: "အဘအမည်",
-//         header: "အဘအမည်",
-//         cell: ({ row }) => row.getValue("အဘအမည်") || "-",
-//     },
-//     {
-//         accessorKey: "နေရပ်လိပ်စာ",
-//         header: "နေရပ်လိပ်စာ",
-//         cell: ({ row }) => row.getValue("နေရပ်လိပ်စာ") || "-",
-//     },
-//     {
-//         accessorKey: "ပုဒ်မ",
-//         header: "ပုဒ်မ",
-//         cell: ({ row }) => row.getValue("ပုဒ်မ") || "-",
-//     },
-//     {
-//         accessorKey: "ပုဒ်မအကြောင်းအရာ",
-//         header: "ပုဒ်မအကြောင်းအရာ",
-//         cell: ({ row }) => row.getValue("ပုဒ်မအကြောင်းအရာ") || "-",
-//     },
-//     {
-//         accessorKey: "အရေးယူအရာရှိ",
-//         header: "အရေးယူအရာရှိ",
-//         cell: ({ row }) => row.getValue("အရေးယူအရာရှိ") || "-",
-//     },
-//     {
-//         accessorKey: "ဒဏ်ဆောင်ရက်",
-//         header: "ဒဏ်ဆောင်ရက်",
-//         cell: ({ row }) => row.getValue("ဒဏ်ဆောင်ရက်") || "-",
-//     },
-//     {
-//         accessorKey: "ရာကြီးအမှတ်",
-//         header: "ရာကြီးအမှတ်",
-//         cell: ({ row }) => row.getValue("ရာကြီးအမှတ်") || "-",
-//     },
-//     {
-//         accessorKey: "ဒဏ်ကြေး",
-//         header: "ဒဏ်ကြေး",
-//         cell: ({ row }) => row.getValue("ဒဏ်ကြေး") || "-",
-//     },
-//     {
-//         accessorKey: "သိမ်းဆည်းပစ္စည်း",
-//         header: "သိမ်းဆည်းပစ္စည်း",
-//         cell: ({ row }) => row.getValue("သိမ်းဆည်းပစ္စည်း") || "-",
-//     },
-// ]
 
 
 function ColumnToggleDropdown({
@@ -208,8 +139,9 @@ interface DataTableProps<TData, TValue> {
     data: TData[]
     scheduleTitle: string
     meta: {
-        totalCount: number
-        hasNextPage: boolean
+        totalCount: number,
+        hasNextPage: boolean,
+        totalPages: number
     }
     currentPage: number
     showPagination?: boolean
@@ -256,7 +188,7 @@ export function DataTable<TData, TValue>({
     })
 
     const router = useRouter()
-    const totalPages = Math.ceil(meta.totalCount / LIMIT)
+    const totalPages = meta.totalPages
 
     const handleButtonClick = () => {
         if (buttonRedirectPath) {

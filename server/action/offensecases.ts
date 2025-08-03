@@ -13,10 +13,8 @@ import {
     seizedItemsTable,
     vehicleCategoriesTable,
 } from "@/db/schema";
-import { and, between, eq, isNotNull, or } from "drizzle-orm";
+import { and, between, eq, isNotNull, or, isNull, sql } from "drizzle-orm";
 
-// Type for inserting rows
-// type OffenseCaseInsert = InferInsertModel<typeof offenseCasesTable>;
 
 export async function insertOffenseCases(data: any[]) {
     if (!data || data.length === 0) return;
@@ -212,19 +210,109 @@ export async function getFilteredOffenseCases(startDate: string, endDate: string
     return result;
 }
 
+interface GetJoinedSeizureRecordsParams {
+    filterType: 'null' | 'not_null';
+    page?: number;
+    limit?: number;
+}
 
-// export async function getFilteredOffenseCases(startDate: string, endDate: string) {
-//     return await db
-//         .select()
-//         .from(offenseCasesTable)
-//         .where(
-//             or(
-//                 between(offenseCasesTable.seized_date, startDate, endDate),
-//                 and(
-//                     isNotNull(offenseCasesTable.action_date),
-//                     between(offenseCasesTable.action_date, startDate, endDate)
-//                 )
-//             )
-//         );
-// }
+export async function getPaginatedSeizureRecords({
+    filterType,
+    page = 1,
+    limit = 10,
+}: GetJoinedSeizureRecordsParams) {
+    const offset = (page - 1) * limit;
+
+    const filterCondition =
+        filterType === 'null'
+            ? and(
+                isNull(vehicleSeizureRecordsTable.case_number),
+                isNull(vehicleSeizureRecordsTable.action_date)
+            )
+            : and(
+                isNotNull(vehicleSeizureRecordsTable.case_number),
+                isNotNull(vehicleSeizureRecordsTable.action_date)
+            );
+
+    const records = await db
+        .select({
+            action_date: vehicleSeizureRecordsTable.action_date,
+            article_id: disciplinaryArticlesTable.id,
+            article_number: disciplinaryArticlesTable.number,
+            case_number: vehicleSeizureRecordsTable.case_number,
+            dc_created_at: disciplinaryCommittedTable.created_at,
+            dc_updated_at: disciplinaryCommittedTable.updated_at,
+            disciplinary_committed_id: disciplinaryCommittedTable.id,
+            fine_amount: disciplinaryCommittedTable.fine_amount,
+            national_id_number: offendersTable.national_id_number,
+            offender_address: offendersTable.address,
+            offender_created_at: offendersTable.created_at,
+            offender_father_name: offendersTable.father_name,
+            offender_id: offendersTable.id,
+            offender_name: offendersTable.name,
+            offender_updated_at: offendersTable.updated_at,
+            offender_vehicle_created_at: offenderVehiclesTable.created_at,
+            offender_vehicle_id: offenderVehiclesTable.id,
+            offender_vehicle_updated_at: offenderVehiclesTable.updated_at,
+            offense_id: committedOffensesTable.id,
+            offense_name: committedOffensesTable.name,
+            officer_id: usersTable.id,
+            officer_name: usersTable.name,
+            seized_date: vehicleSeizureRecordsTable.seized_date,
+            seized_item_id: seizedItemsTable.id,
+            seized_item_name: seizedItemsTable.name,
+            seizure_created_at: vehicleSeizureRecordsTable.created_at,
+            seizure_id: vehicleSeizureRecordsTable.id,
+            seizure_location: vehicleSeizureRecordsTable.seizure_location,
+            seizure_updated_at: vehicleSeizureRecordsTable.updated_at,
+            vehicle_categories_id: vehiclesTable.vehicle_categories_id,
+            vehicle_created_at: vehiclesTable.created_at,
+            vehicle_id: vehiclesTable.id,
+            vehicle_license_number: vehiclesTable.vehicle_license_number,
+            vehicle_number: vehiclesTable.vehicle_number,
+            vehicle_types: vehiclesTable.vehicle_types,
+            vehicle_updated_at: vehiclesTable.updated_at,
+            wheel_tax: vehiclesTable.wheel_tax,
+        })
+        .from(vehicleSeizureRecordsTable)
+        .innerJoin(offenderVehiclesTable, eq(vehicleSeizureRecordsTable.offender_vehicle_id, offenderVehiclesTable.id))
+        .innerJoin(offendersTable, eq(offenderVehiclesTable.offender_id, offendersTable.id))
+        .innerJoin(vehiclesTable, eq(offenderVehiclesTable.vehicle_id, vehiclesTable.id))
+        .innerJoin(disciplinaryCommittedTable, eq(vehicleSeizureRecordsTable.disciplinary_committed_id, disciplinaryCommittedTable.id))
+        .innerJoin(committedOffensesTable, eq(disciplinaryCommittedTable.committed_offenses_id, committedOffensesTable.id))
+        .innerJoin(disciplinaryArticlesTable, eq(disciplinaryCommittedTable.disciplinary_articles_id, disciplinaryArticlesTable.id))
+        .innerJoin(usersTable, eq(vehicleSeizureRecordsTable.officer_id, usersTable.id))
+        .innerJoin(seizedItemsTable, eq(vehicleSeizureRecordsTable.seized_item_id, seizedItemsTable.id))
+        .innerJoin(vehicleCategoriesTable, eq(vehiclesTable.vehicle_categories_id, vehicleCategoriesTable.id))
+        .where(filterCondition)
+        .limit(limit)
+        .offset(offset);
+
+    const [{ count }] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(vehicleSeizureRecordsTable)
+        .where(filterCondition);
+
+    const totalCount = Number(count);
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasNextPage = offset + records.length < totalCount;
+
+    const data = records
+        .map((item, index) => ({
+            no: index + 1,
+            ...item,
+        }));
+
+    return {
+        data,
+        meta: {
+            page,
+            limit,
+            totalCount,
+            totalPages,
+            hasNextPage,
+        }
+
+    };
+}
 
