@@ -1,6 +1,6 @@
 import { db } from '@/db';
 import { committedOffensesTable, disciplinaryArticlesTable, disciplinaryCommittedTable, offendersTable, offenderVehiclesTable, seizedItemsTable, usersTable, vehicleSeizureRecordsTable, vehiclesTable } from '@/db/schema';
-import { eq, ilike, or, sql } from 'drizzle-orm';
+import { desc, eq, ilike, or, sql } from 'drizzle-orm';
 
 export async function getOffenderMostCount({
     page = 1,
@@ -13,64 +13,7 @@ export async function getOffenderMostCount({
 } = {}) {
     const offset = (page - 1) * limit;
 
-    // Construct base join
-    const baseQuery = db
-        .select({
-            // Seizure record
-            seizure_id: vehicleSeizureRecordsTable.id,
-            action_date: vehicleSeizureRecordsTable.action_date,
-            case_number: vehicleSeizureRecordsTable.case_number,
-            seized_date: vehicleSeizureRecordsTable.seized_date,
-            seizure_location: vehicleSeizureRecordsTable.seizure_location,
-
-            // Officer
-            officer_id: usersTable.id,
-            officer_name: usersTable.name,
-
-            // Disciplinary committed
-            disciplinary_committed_id: disciplinaryCommittedTable.id,
-            article_id: disciplinaryArticlesTable.id,
-            article_number: disciplinaryArticlesTable.number,
-            offense_id: committedOffensesTable.id,
-            offense_name: committedOffensesTable.name,
-            fine_amount: disciplinaryCommittedTable.fine_amount,
-
-            // Offender
-            offender_id: offendersTable.id,
-            offender_name: offendersTable.name,
-            offender_father_name: offendersTable.father_name,
-            national_id_number: offendersTable.national_id_number,
-            offender_address: offendersTable.address,
-
-            // Offender Vehicle
-            offender_vehicle_id: offenderVehiclesTable.id,
-
-            // Vehicle
-            vehicle_id: vehiclesTable.id,
-            vehicle_number: vehiclesTable.vehicle_number,
-            vehicle_categories_id: vehiclesTable.vehicle_categories_id,
-            vehicle_types: vehiclesTable.vehicle_types,
-            wheel_tax: vehiclesTable.wheel_tax,
-            vehicle_license_number: vehiclesTable.vehicle_license_number,
-
-            // Seized Item
-            seized_item_id: seizedItemsTable.id,
-            seized_item_name: seizedItemsTable.name,
-
-            // Seizure record count per offender
-            seizureRecordCount: sql<number>`COUNT(${vehicleSeizureRecordsTable.id}) OVER (PARTITION BY ${offenderVehiclesTable.offender_id})`,
-        })
-        .from(vehicleSeizureRecordsTable)
-        .innerJoin(offenderVehiclesTable, eq(vehicleSeizureRecordsTable.offender_vehicle_id, offenderVehiclesTable.id))
-        .innerJoin(offendersTable, eq(offenderVehiclesTable.offender_id, offendersTable.id))
-        .innerJoin(vehiclesTable, eq(offenderVehiclesTable.vehicle_id, vehiclesTable.id))
-        .innerJoin(usersTable, eq(vehicleSeizureRecordsTable.officer_id, usersTable.id))
-        .innerJoin(seizedItemsTable, eq(vehicleSeizureRecordsTable.seized_item_id, seizedItemsTable.id))
-        .innerJoin(disciplinaryCommittedTable, eq(vehicleSeizureRecordsTable.disciplinary_committed_id, disciplinaryCommittedTable.id))
-        .innerJoin(disciplinaryArticlesTable, eq(disciplinaryCommittedTable.disciplinary_articles_id, disciplinaryArticlesTable.id))
-        .innerJoin(committedOffensesTable, eq(disciplinaryCommittedTable.committed_offenses_id, committedOffensesTable.id));
-
-    // Add search condition if provided
+    // Base condition
     let whereCondition = undefined;
     if (search && search.trim() !== '') {
         const searchTerm = `%${search.trim()}%`;
@@ -84,35 +27,91 @@ export async function getOffenderMostCount({
         );
     }
 
-    // Count for pagination (filtered)
-    const [{ count }] = await db
-        .select({ count: sql<number>`count(*)` })
+    // Base query to fetch seizure data
+    const rawRecords = await db
+        .select({
+            seizure_id: vehicleSeizureRecordsTable.id,
+            action_date: vehicleSeizureRecordsTable.action_date,
+            case_number: vehicleSeizureRecordsTable.case_number,
+            seized_date: vehicleSeizureRecordsTable.seized_date,
+            seizure_location: vehicleSeizureRecordsTable.seizure_location,
+
+            officer_id: usersTable.id,
+            officer_name: usersTable.name,
+
+            disciplinary_committed_id: disciplinaryCommittedTable.id,
+            article_id: disciplinaryArticlesTable.id,
+            article_number: disciplinaryArticlesTable.number,
+            offense_id: committedOffensesTable.id,
+            offense_name: committedOffensesTable.name,
+            fine_amount: disciplinaryCommittedTable.fine_amount,
+
+            offender_id: offendersTable.id,
+            offender_name: offendersTable.name,
+            offender_father_name: offendersTable.father_name,
+            national_id_number: offendersTable.national_id_number,
+            offender_address: offendersTable.address,
+
+            offender_vehicle_id: offenderVehiclesTable.id,
+
+            vehicle_id: vehiclesTable.id,
+            vehicle_number: vehiclesTable.vehicle_number,
+            vehicle_categories_id: vehiclesTable.vehicle_categories_id,
+            vehicle_types: vehiclesTable.vehicle_types,
+            wheel_tax: vehiclesTable.wheel_tax,
+            vehicle_license_number: vehiclesTable.vehicle_license_number,
+
+            seized_item_id: seizedItemsTable.id,
+            seized_item_name: seizedItemsTable.name,
+
+            seizureRecordCount: sql<number>`COUNT(${vehicleSeizureRecordsTable.id}) OVER (PARTITION BY ${offenderVehiclesTable.offender_id})`,
+        })
+        .from(vehicleSeizureRecordsTable)
+        .innerJoin(offenderVehiclesTable, eq(vehicleSeizureRecordsTable.offender_vehicle_id, offenderVehiclesTable.id))
+        .innerJoin(offendersTable, eq(offenderVehiclesTable.offender_id, offendersTable.id))
+        .innerJoin(vehiclesTable, eq(offenderVehiclesTable.vehicle_id, vehiclesTable.id))
+        .innerJoin(usersTable, eq(vehicleSeizureRecordsTable.officer_id, usersTable.id))
+        .innerJoin(seizedItemsTable, eq(vehicleSeizureRecordsTable.seized_item_id, seizedItemsTable.id))
+        .innerJoin(disciplinaryCommittedTable, eq(vehicleSeizureRecordsTable.disciplinary_committed_id, disciplinaryCommittedTable.id))
+        .innerJoin(disciplinaryArticlesTable, eq(disciplinaryCommittedTable.disciplinary_articles_id, disciplinaryArticlesTable.id))
+        .innerJoin(committedOffensesTable, eq(disciplinaryCommittedTable.committed_offenses_id, committedOffensesTable.id))
+        .where(whereCondition ?? sql`TRUE`)
+        .orderBy(offenderVehiclesTable.id, desc(vehicleSeizureRecordsTable.seized_date))
+        .limit(limit)
+        .offset(offset);
+
+    // Filter out duplicate offender_vehicle_id, keep only the first occurrence
+    const uniqueOffenderVehicleIds = new Set<number>();
+    const filtered = [];
+
+    for (const record of rawRecords) {
+        if (!uniqueOffenderVehicleIds.has(Number(record.offender_vehicle_id))) {
+            uniqueOffenderVehicleIds.add(Number(record.offender_vehicle_id));
+            if (record.seizureRecordCount > 1) {
+                filtered.push(record);
+            }
+
+        }
+    }
+
+    // Count total for pagination (on unique offender_vehicle_id)
+    const countResult = await db
+        .select({ count: sql<number>`COUNT(DISTINCT ${offenderVehiclesTable.id})` })
         .from(vehicleSeizureRecordsTable)
         .innerJoin(offenderVehiclesTable, eq(vehicleSeizureRecordsTable.offender_vehicle_id, offenderVehiclesTable.id))
         .innerJoin(offendersTable, eq(offenderVehiclesTable.offender_id, offendersTable.id))
         .innerJoin(vehiclesTable, eq(offenderVehiclesTable.vehicle_id, vehiclesTable.id))
         .where(whereCondition ?? sql`TRUE`);
 
-    const totalCount = Number(count);
+    const totalCount = Number(countResult[0].count);
     const totalPages = Math.ceil(totalCount / limit);
-
-    // Apply where + pagination
-    const records = await baseQuery
-        .where(whereCondition ?? sql`TRUE`)
-        .limit(limit)
-        .offset(offset);
-
-    const hasNextPage = offset + records.length < totalCount;
-
-    const data = records
-        .map((item, index) => ({
-            no: offset + index + 1,
-            ...item,
-        }))
-        .filter((item) => item.seizureRecordCount > 1);
+    const hasNextPage = offset + filtered.length < totalCount;
 
     return {
-        data,
+        data: filtered.map((item, index) => ({
+            no: offset + index + 1,
+            ...item,
+        })),
         meta: {
             page,
             limit,
@@ -122,5 +121,7 @@ export async function getOffenderMostCount({
         },
     };
 }
+
+
 
 

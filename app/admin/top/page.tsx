@@ -1,7 +1,7 @@
 import React from 'react'
 import { columns } from "@/components/data/columns";
 import { DataTable } from '@/components/data/data-table';
-import { caseColumnKeys } from '@/utils/constant/columnkeys';
+import { topKey } from '@/utils/constant/columnkeys';
 import { getOffenderMostCount } from '@/server/action/offensecaseData';
 
 interface Props {
@@ -12,7 +12,7 @@ const page = async ({ searchParams }: Props) => {
     const page = searchParams.page ?? "1"; // default to 1 if undefined
     const pageNumber = parseInt(Array.isArray(page) ? page[0] : page);
     const search = searchParams.search ?? "";
-    
+
     const res = await getOffenderMostCount({
         page: pageNumber,
         limit: 10,
@@ -31,7 +31,7 @@ const page = async ({ searchParams }: Props) => {
                     showPagination={true}
                     showSearch={true}
                     showButton={false}
-                    toggleableColumnKeys={caseColumnKeys}
+                    toggleableColumnKeys={topKey}
                 />
             </div>
         </div>

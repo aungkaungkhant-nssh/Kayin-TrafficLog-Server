@@ -13,7 +13,7 @@ import {
     seizedItemsTable,
     vehicleCategoriesTable,
 } from "@/db/schema";
-import { and, between, eq, isNotNull, or, isNull, sql, like } from "drizzle-orm";
+import { and, between, eq, isNotNull, or, isNull, sql, like, } from "drizzle-orm";
 
 
 export async function insertOffenseCases(data: any[]) {
@@ -228,12 +228,22 @@ export async function getPaginatedSeizureRecords({
     const filterCondition =
         filterType === 'null'
             ? and(
-                isNull(vehicleSeizureRecordsTable.case_number),
-                isNull(vehicleSeizureRecordsTable.action_date)
+                or(
+                    isNull(vehicleSeizureRecordsTable.case_number),
+                    isNull(vehicleSeizureRecordsTable.case_number)
+                ),
+                or(
+                    isNull(vehicleSeizureRecordsTable.action_date),
+                    eq(vehicleSeizureRecordsTable.action_date, '')
+                )
             )
             : and(
-                isNotNull(vehicleSeizureRecordsTable.case_number),
-                isNotNull(vehicleSeizureRecordsTable.action_date)
+                and(
+                    isNotNull(vehicleSeizureRecordsTable.case_number),
+                ),
+                and(
+                    isNotNull(vehicleSeizureRecordsTable.action_date)
+                )
             );
 
     // Optional search condition

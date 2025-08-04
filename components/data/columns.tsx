@@ -1,4 +1,5 @@
 "use client"
+import { englishToMyanmar } from "@/utils/constant/changeLanguage"
 import { ColumnDef } from "@tanstack/react-table"
 
 export type Schedule = {
@@ -99,17 +100,17 @@ export const columns: ColumnDef<Schedule>[] = [
         header: "သိမ်းဆည်းပစ္စည်း",
         cell: ({ row }) => row.getValue("seized_item_name") || "-",
     },
-    // {
-    //     accessorKey: "seizureRecordCount",
-    //     header: "အရေအတွက်",
-    //     cell: ({ row }) => {
-    //         return (
-    //             <span
-    //                 className="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800"
-    //             >
-    //                 {`${englishToMyanmar(row.getValue("seizureRecordCount"))} ကြိမ်` || "-"}
-    //             </span>
-    //         );
-    //     },
-    // }
+    {
+        accessorKey: "seizureRecordCount",
+        header: "အရေအတွက်",
+        cell: ({ row }) => {
+            return (
+                <span
+                    className="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800"
+                >
+                    {row.getValue("seizureRecordCount") ? englishToMyanmar(row.getValue("seizureRecordCount")) + "ကြိမ်" : "-"}
+                </span>
+            );
+        },
+    }
 ];

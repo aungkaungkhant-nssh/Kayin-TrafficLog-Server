@@ -4,14 +4,16 @@ import { ChartBarLabel } from '@/components/ui/BarChart'
 import { ChartPieLabelList } from '@/components/ui/chart-pie-label';
 import { columns } from "@/components/data/columns";
 import { DataTable } from '@/components/data/data-table';
-import { caseColumnKeys } from '@/utils/constant/columnkeys';
+import { topKey } from '@/utils/constant/columnkeys';
 import { getDashboardCount } from '@/server/action/dashboardData';
 import Loading from './Loading';
 import { getOffenderMostCount } from '@/server/action/offensecaseData';
 
 const page = async () => {
   const data = await getDashboardCount();
-  const mostOffenderCount = await getOffenderMostCount({})
+  const res = await getOffenderMostCount({
+
+  })
   const { totalFineAmount, offendersCount, filedCasesCount, unfiledCasesCount, categoryCounts } = data;
 
   return (
@@ -33,16 +35,16 @@ const page = async () => {
         <hr />
         <div>
           <DataTable
-            data={mostOffenderCount}
+            data={res.data}
             columns={columns}
             scheduleTitle={"ပြစ်မှုများအများဆုံး ကျူးလွန်သူမှတ်တမ်းများ"}
-            meta={{ totalCount: mostOffenderCount.length, hasNextPage: false }}
+            meta={res.meta}
             currentPage={1}
             showPagination={false}
             showSearch={false}
             buttonText="အားလုံးကြည့်မည်"
             buttonRedirectPath="/trafficlog/offender"
-            toggleableColumnKeys={caseColumnKeys}
+            toggleableColumnKeys={topKey}
           />
         </div>
       </div>
