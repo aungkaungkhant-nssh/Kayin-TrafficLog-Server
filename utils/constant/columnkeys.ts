@@ -1,11 +1,11 @@
 export const caseColumnKeys = [
     "no",
-    "seized_date",
-    "vehicle_number",
-    "vehicle_types",
-    "seizure_location",
     "offender_name",
     "national_id_number",
+    "seized_date",
+    "seizure_location",
+    "vehicle_number",
+    "vehicle_types",
     "action_date",
     "case_number"
 ]
@@ -13,23 +13,22 @@ export const caseColumnKeys = [
 export const dailyColumnKeys = [
     "no",
     "seized_date",
+    "offender_name",
+    "national_id_number",
     "vehicle_number",
     "vehicle_types",
     "seizure_location",
-    "offender_name",
-    "national_id_number",
 
 ]
 
 export const topKey = [
     "no",
-    "seized_date",
+    "offender_name",
+    "national_id_number",
+    "offender_address",
     "vehicle_number",
     "vehicle_types",
     "seizure_location",
-    "offender_name",
-    "national_id_number",
     "seizureRecordCount",
-    "action_date",
-    "case_number"
+
 ]

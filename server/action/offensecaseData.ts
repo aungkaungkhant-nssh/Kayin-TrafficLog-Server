@@ -76,7 +76,7 @@ export async function getOffenderMostCount({
         .innerJoin(disciplinaryArticlesTable, eq(disciplinaryCommittedTable.disciplinary_articles_id, disciplinaryArticlesTable.id))
         .innerJoin(committedOffensesTable, eq(disciplinaryCommittedTable.committed_offenses_id, committedOffensesTable.id))
         .where(whereCondition ?? sql`TRUE`)
-        .orderBy(offenderVehiclesTable.id, desc(vehicleSeizureRecordsTable.seized_date))
+        .orderBy(desc(vehicleSeizureRecordsTable.id))
         .limit(limit)
         .offset(offset);
 
@@ -96,12 +96,21 @@ export async function getOffenderMostCount({
 
     // Count total for pagination (on unique offender_vehicle_id)
     const countResult = await db
-        .select({ count: sql<number>`COUNT(DISTINCT ${offenderVehiclesTable.id})` })
-        .from(vehicleSeizureRecordsTable)
-        .innerJoin(offenderVehiclesTable, eq(vehicleSeizureRecordsTable.offender_vehicle_id, offenderVehiclesTable.id))
-        .innerJoin(offendersTable, eq(offenderVehiclesTable.offender_id, offendersTable.id))
-        .innerJoin(vehiclesTable, eq(offenderVehiclesTable.vehicle_id, vehiclesTable.id))
-        .where(whereCondition ?? sql`TRUE`);
+        .select({ count: sql<number>`COUNT(*)` })
+        .from(
+            db
+                .select({
+                    offenderVehicleId: offenderVehiclesTable.id,
+                })
+                .from(vehicleSeizureRecordsTable)
+                .innerJoin(offenderVehiclesTable, eq(vehicleSeizureRecordsTable.offender_vehicle_id, offenderVehiclesTable.id))
+                .innerJoin(offendersTable, eq(offenderVehiclesTable.offender_id, offendersTable.id))
+                .innerJoin(vehiclesTable, eq(offenderVehiclesTable.vehicle_id, vehiclesTable.id))
+                .where(whereCondition ?? sql`TRUE`)
+                .groupBy(offenderVehiclesTable.id)
+                .having(sql`COUNT(${vehicleSeizureRecordsTable.id}) > 1`)
+                .as('subquery')
+        );
 
     const totalCount = Number(countResult[0].count);
     const totalPages = Math.ceil(totalCount / limit);

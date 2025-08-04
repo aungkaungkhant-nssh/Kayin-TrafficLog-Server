@@ -13,7 +13,7 @@ import {
     seizedItemsTable,
     vehicleCategoriesTable,
 } from "@/db/schema";
-import { and, between, eq, isNotNull, or, isNull, sql, like, } from "drizzle-orm";
+import { and, between, eq, isNotNull, or, isNull, sql, like, desc } from "drizzle-orm";
 
 
 export async function insertOffenseCases(data: any[]) {
@@ -312,6 +312,7 @@ export async function getPaginatedSeizureRecords({
         .innerJoin(seizedItemsTable, eq(vehicleSeizureRecordsTable.seized_item_id, seizedItemsTable.id))
         .innerJoin(vehicleCategoriesTable, eq(vehiclesTable.vehicle_categories_id, vehicleCategoriesTable.id))
         .where(whereCondition)
+        .orderBy(desc(vehicleSeizureRecordsTable.id))
         .limit(limit)
         .offset(offset);
 

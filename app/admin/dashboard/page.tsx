@@ -11,9 +11,7 @@ import { getOffenderMostCount } from '@/server/action/offensecaseData';
 
 const page = async () => {
   const data = await getDashboardCount();
-  const res = await getOffenderMostCount({
-
-  })
+  const res = await getOffenderMostCount({})
   const { totalFineAmount, offendersCount, filedCasesCount, unfiledCasesCount, categoryCounts } = data;
 
   return (
@@ -35,7 +33,7 @@ const page = async () => {
         <hr />
         <div>
           <DataTable
-            data={res.data}
+            data={res.data.slice(0, 3)}
             columns={columns}
             scheduleTitle={"ပြစ်မှုများအများဆုံး ကျူးလွန်သူမှတ်တမ်းများ"}
             meta={res.meta}
