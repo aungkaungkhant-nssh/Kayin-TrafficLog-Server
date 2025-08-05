@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 // import { NextRequest } from "next/server";
 // import type { InferInsertModel } from "drizzle-orm";

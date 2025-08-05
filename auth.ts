@@ -1,13 +1,14 @@
-import NextAuth from "next-auth";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import { eq } from "drizzle-orm";
-import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
+import { db } from "@/db";
 import { rolesTable, usersTable } from "@/db/schema";
 import { loginSchema } from "@/types/login.schema";
-import { db } from "@/db";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import bcrypt from "bcryptjs";
+import { eq } from "drizzle-orm";
+import NextAuth from "next-auth";
 
-const handler = NextAuth({
+import Credentials from "next-auth/providers/credentials";
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
     adapter: DrizzleAdapter(db),
     secret: process.env.AUTH_SECRET,
     session: { strategy: "jwt" },
@@ -61,6 +62,3 @@ const handler = NextAuth({
         }),
     ],
 });
-
-export { handler as GET, handler as POST, handler as auth };
-

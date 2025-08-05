@@ -5,13 +5,15 @@ import { caseColumnKeys } from '@/utils/constant/columnkeys';
 import { getPaginatedSeizureRecords } from '@/server/action/offensecases';
 import Loading from '../dashboard/Loading';
 
-interface Props {
-    searchParams: { [key: string]: string | string[] | undefined }
-}
 
-const page = async ({ searchParams }: Props) => {
-    const page = searchParams.page ?? "1";
-    const search = searchParams.search ?? "";
+const page = async ({
+    searchParams,
+}: {
+    searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}) => {
+    const params = await searchParams
+    const page = params?.page ?? "1";
+    const search = params?.search ?? "";
     const pageNumber = parseInt(Array.isArray(page) ? page[0] : page);
     const res = await getPaginatedSeizureRecords({
         filterType: 'not_null',

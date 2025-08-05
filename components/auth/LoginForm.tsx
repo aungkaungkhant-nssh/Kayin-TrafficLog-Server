@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { loginSchema, LoginSchemaType } from '@/types/login.schema';
@@ -12,9 +13,9 @@ import {
 } from '../ui/form';
 import { Input } from '../ui/input';
 import SubmitButton from '../ui/submit-button';
-import { signIn } from 'next-auth/react';
 import FormError from './FormError';
 import { useRouter } from 'next/navigation';
+import { login } from '@/server/action/auth';
 
 const LoginForm = () => {
     const [isPending, startTransition] = useTransition();
@@ -31,12 +32,8 @@ const LoginForm = () => {
     const onSubmit = async (data: LoginSchemaType) => {
         const { name, password } = data;
         startTransition(async () => {
-            const res = await signIn("credentials", {
-                name,
-                password,
-                redirect: false
-            })
-            console.log(res)
+            const res = await login({ name, password }) as any;
+
             if (res?.error) {
                 switch (res.error) {
                     case "CredentialsSignin":

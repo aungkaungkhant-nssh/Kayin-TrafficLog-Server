@@ -51,12 +51,12 @@ export type Schedule = {
 }
 
 
-function ColumnToggleDropdown({
+function ColumnToggleDropdown<TData>({
     columns,
     columnVisibility,
     setColumnVisibility,
 }: {
-    columns: ColumnDef<Schedule>[]
+    columns: ColumnDef<TData, any>[]
     columnVisibility: Record<string, boolean>
     setColumnVisibility: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
 }) {
@@ -73,7 +73,6 @@ function ColumnToggleDropdown({
         return () => document.removeEventListener("mousedown", onClick)
     }, [])
 
-    // Show all columns
     const filteredColumns = columns
 
     return (
@@ -154,7 +153,7 @@ interface DataTableProps<TData, TValue> {
     showColumn?: boolean
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends Schedule, TValue>({
     columns,
     data,
     scheduleTitle,

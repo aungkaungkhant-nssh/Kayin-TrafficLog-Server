@@ -1,11 +1,13 @@
-import { getServerSession } from "next-auth/next";
-import { handlers } from "@/server/auth";
-import Link from "next/link";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { auth } from "@/auth";
 import Image from "next/image";
+import Link from "next/link";
 
 const Navbar = async () => {
-    const session = await getServerSession(handlers);
-
+    const session = await auth();
+    // const session = await getServerSession(authOptions);
+    // console.log("aaa", session)
     if (!session) {
         return (
             <div className="fixed right-7 top-3 p-2 bg-gray-100 rounded shadow">
@@ -39,3 +41,5 @@ const Navbar = async () => {
 };
 
 export default Navbar;
+
+

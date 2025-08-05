@@ -14,8 +14,8 @@ import { cn } from "@/lib/utils"
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Notebook, FileCheck, AlertOctagon, LogOut } from "lucide-react";
 import Image from 'next/image'
-import { signOut } from "next-auth/react"
 import { Button } from "../ui/button";
+import { logout } from "@/server/action/auth";
 
 // Menu items.
 const items = [
@@ -91,7 +91,7 @@ export function AppSidebar() {
             {/* ✅ Sidebar Footer with Logout */}
             <SidebarFooter className="p-4 border-t">
                 <Button
-                    onClick={() => signOut({ callbackUrl: '/' })}
+                    onClick={() => logout()}
                 >
                     <LogOut />
                     <span>ထွက်မည်။</span>

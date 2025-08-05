@@ -1,0 +1,3 @@
+
+export { handlers } from "@/auth";
+
