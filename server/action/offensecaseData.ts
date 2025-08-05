@@ -64,7 +64,7 @@ export async function getOffenderMostCount({
             seized_item_id: seizedItemsTable.id,
             seized_item_name: seizedItemsTable.name,
 
-            seizureRecordCount: sql<number>`COUNT(${vehicleSeizureRecordsTable.id}) OVER (PARTITION BY ${offenderVehiclesTable.offender_id})`,
+            seizureRecordCount: sql<number>`COUNT(${vehicleSeizureRecordsTable.id}) OVER (PARTITION BY ${offenderVehiclesTable.id})`,
         })
         .from(vehicleSeizureRecordsTable)
         .innerJoin(offenderVehiclesTable, eq(vehicleSeizureRecordsTable.offender_vehicle_id, offenderVehiclesTable.id))
@@ -116,8 +116,12 @@ export async function getOffenderMostCount({
     const totalPages = Math.ceil(totalCount / limit);
     const hasNextPage = offset + filtered.length < totalCount;
 
+    filtered.sort((a, b) => b.seizureRecordCount - a.seizureRecordCount);
+
+    // ✅ Apply pagination
+    const paginated = filtered.slice(offset, offset + limit);
     return {
-        data: filtered.map((item, index) => ({
+        data: paginated.map((item, index) => ({
             no: offset + index + 1,
             ...item,
         })),

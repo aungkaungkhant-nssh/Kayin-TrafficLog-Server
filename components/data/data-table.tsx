@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import React, { useState, useRef, useEffect } from "react"
@@ -149,7 +150,8 @@ interface DataTableProps<TData, TValue> {
     showButton?: boolean
     buttonText?: string
     buttonRedirectPath?: string,
-    toggleableColumnKeys: string[]
+    toggleableColumnKeys: string[],
+    showColumn?: boolean
 }
 
 export function DataTable<TData, TValue>({
@@ -161,6 +163,7 @@ export function DataTable<TData, TValue>({
     showPagination = true,
     showSearch = true,
     showButton = true,
+    showColumn = true,
     buttonText,
     buttonRedirectPath,
     toggleableColumnKeys
@@ -212,11 +215,16 @@ export function DataTable<TData, TValue>({
                 <h1 className="font-bold text-xl text-primary">{scheduleTitle}</h1>
 
                 <div className="flex items-center gap-3 flex-wrap">
-                    <ColumnToggleDropdown
-                        columns={columns}
-                        columnVisibility={columnVisibility}
-                        setColumnVisibility={setColumnVisibility}
-                    />
+                    {
+                        showColumn && (
+                            <ColumnToggleDropdown
+                                columns={columns}
+                                columnVisibility={columnVisibility}
+                                setColumnVisibility={setColumnVisibility}
+                            />
+                        )
+                    }
+
                     {showSearch && (
                         <div>
                             <Input

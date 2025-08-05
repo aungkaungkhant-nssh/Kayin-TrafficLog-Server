@@ -43,6 +43,7 @@ const page = async () => {
             buttonText="အားလုံးကြည့်မည်"
             buttonRedirectPath="/trafficlog/offender"
             toggleableColumnKeys={topKey}
+            showColumn={true}
           />
         </div>
       </div>

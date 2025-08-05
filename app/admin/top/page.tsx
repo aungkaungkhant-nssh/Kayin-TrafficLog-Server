@@ -32,6 +32,7 @@ const page = async ({ searchParams }: Props) => {
                     showSearch={true}
                     showButton={false}
                     toggleableColumnKeys={topKey}
+                    showColumn={true}
                 />
             </div>
         </div>
