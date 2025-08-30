@@ -41,7 +41,7 @@ const page = async () => {
             showPagination={false}
             showSearch={false}
             buttonText="အားလုံးကြည့်မည်"
-            buttonRedirectPath="/trafficlog/offender"
+            buttonRedirectPath="/admin/top"
             toggleableColumnKeys={topKey}
             showColumn={true}
           />
